@@ -1,5 +1,5 @@
-# Poirot RD WGS snakemake
- Clinical Genomics Uppsala inheritance disease pipeline for WGS made with snakemake.
+# Poirot RD WGS
+ Clinical Genomics Uppsala inheritance disease pipeline for WGS made as a snakemake workflow.
 
 Start with the basics:
 alignment with bam
