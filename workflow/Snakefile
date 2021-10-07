@@ -1,0 +1,46 @@
+report: "report/workflow.rst"  #get figures and stuff from run in a report
+
+rule all:
+    input:
+        "plots/quals.svg"
+
+from snakemake.utils import min_version
+min_version("6.0")
+
+configfile: "config.yaml"
+
+
+module bwa_mapping:
+    meta_wrapper: "0.72.0/meta/bio/bwa_mapping"
+
+
+use rule * from bwa_mapping
+
+
+def get_input(wildcards):
+    return config["samples"][wildcards.sample]
+
+
+use rule bwa_mem from bwa_mapping with:
+    input:
+        get_input
+
+
+rule samtools_sort:
+    input:
+        "mapped/{sample}.bam"
+    output:
+        "mapped/{sample}.sorted.bam"
+    params:
+        "-m 4G"
+    threads: 8
+    wrapper:
+        "0.2.0/bio/samtools/sort"
+
+rule samtools_index:
+    input:
+        "sorted_reads/{sample}.bam"
+    output:
+        "sorted_reads/{sample}.bam.bai"
+    shell:
+        "samtools index {input}"
