@@ -1,0 +1,116 @@
+#snakemake -p -j 120 --drmaa "-A wp1 -p core -n {cluster.n} -t {cluster.time}"  -s ./Twist_exome_WP3.smk --use-singularity --singularity-args "--bind /data --bind /projects --bind /scratch " --cluster-config Config/Slurm/cluster.json
+
+configfile: "Twist_exome_WP3.yaml"
+
+wildcard_constraints:
+
+    seqID=config["seqID"]["sequencerun"],
+
+sample_list = [s.Index  for s in samples.itertuples()]
+
+def get_input():
+    input_list = []
+    '''Fastq'''
+    input_list.append(["fastq/" + s + "_R1.fastq.gz" for s in sample_list])
+    input_list.append(["fastq/" + s + "_R2.fastq.gz" for s in sample_list])
+
+    '''Alignment'''
+    input_list.append(["alignment/" + s + ".bam" for s in sample_list])
+    input_list.append(["alignment/" + s + ".bam.bai" for s in sample_list])
+
+    '''SNV / INDEL'''
+    input_list.append(["haplotypecaller/" + s + ".vcf.gz" for s in sample_list])
+    input_list.append(["haplotypecaller/" + s + ".vep.vcf.gz" for s in sample_list])
+    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.vcf.gz" for s in sample_list])
+    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.filteredAF.Cartagenia.vcf" for s in sample_list])
+    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.filteredAF.Cartagenia.noHLA.vcf" for s in sample_list])
+    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.filteredAF.Cartagenia.noHLA.chrX.vcf" for s in sample_list])
+    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.filteredAF.Cartagenia.noHLA.chrX.vcfstats.vcf" for s in sample_list])
+
+    '''QC'''
+    input_list.append(["results/sex." + s + ".txt" for s in sample_list])
+
+    return input_list
+
+rule all:
+    input:
+        get_input()
+
+
+include: "src/Snakemake/workflow/Twist_exome_WP3_workflow.smk"
+
+
+
+
+# The main entry point of your workflow.
+# After configuring, running snakemake -n in a clone of this repository should successfully execute a dry-run of the workflow.
+from snakemake.utils import min_version
+
+min_version("6.5")
+
+
+report: "report/workflow.rst"
+
+
+rule all:
+    input:
+        "merged_calls/all.vcf.gz",
+        "qc/multiqc.html",
+
+
+include: "rules/common.smk"
+include: "rules/ref.smk"
+include: "rules/trimming.smk"
+include: "rules/mapping.smk"
+include: "rules/calling.smk"
+include: "rules/qc.smk"
+
+
+
+
+report: "report/workflow.rst"  #get figures and stuff from run in a report
+
+rule all:
+    input:
+        "plots/quals.svg"
+
+from snakemake.utils import min_version
+min_version("6.0")
+
+configfile: "config.yaml"
+
+
+module bwa_mapping:
+    meta_wrapper: "0.72.0/meta/bio/bwa_mapping"
+
+
+use rule * from bwa_mapping
+
+
+def get_input(wildcards):
+    return config["samples"][wildcards.sample]
+
+
+use rule bwa_mem from bwa_mapping with:
+    input:
+        get_input
+
+
+rule samtools_sort:
+    input:
+        "mapped/{sample}.bam"
+    output:
+        "mapped/{sample}.sorted.bam"
+    params:
+        "-m 4G"
+    threads: 8
+    wrapper:
+        "0.2.0/bio/samtools/sort"
+
+rule samtools_index:
+    input:
+        "sorted_reads/{sample}.bam"
+    output:
+        "sorted_reads/{sample}.bam.bai"
+    shell:
+        "samtools index {input}"

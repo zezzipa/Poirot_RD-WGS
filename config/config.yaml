@@ -1,3 +1,22 @@
+---
+
+samples: samples.tsv
+
+units: units.tsv
+
+reference_genome: /data/ref_genomes/hg19/bwa/BWA_0.7.10_refseq/hg19.with.mt.fasta
+reference_genome_name: hg19.with.mt
+reference_genome_date: 200902
+reference_contigs: reference.hg19.Info
+
+default_container: "docker://marrip/common:1.1.0"
+
+
+
+
+
+
+
 programs:
     Trimming: "Fastp" #Cutadapt / Fastp / None
     markduplicate: "CPU" #GPU / CPU

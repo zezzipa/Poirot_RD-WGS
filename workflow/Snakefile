@@ -1,94 +1,75 @@
 #snakemake -p -j 120 --drmaa "-A wp1 -p core -n {cluster.n} -t {cluster.time}"  -s ./Twist_exome_WP3.smk --use-singularity --singularity-args "--bind /data --bind /projects --bind /scratch " --cluster-config Config/Slurm/cluster.json
 
-configfile: "Twist_exome_WP3.yaml"
+#rule NAME:
+#    input: "path/to/inputfile", "path/to/other/inputfile"
+#    output: "path/to/outputfile", "path/to/another/outputfile"
+#    shell: "somecommand {input} {output}"
 
-wildcard_constraints:
-    unit="[A-Za-z0-9-]+",
-    sample="[^.]+",
-
-sample_list = [s.Index  for s in samples.itertuples()]
-
-def get_input():
-    input_list = []
-    '''Fastq'''
-    input_list.append(["fastq/" + s + "_R1.fastq.gz" for s in sample_list])
-    input_list.append(["fastq/" + s + "_R2.fastq.gz" for s in sample_list])
-
-    '''Alignment'''
-    input_list.append(["alignment/" + s + ".bam" for s in sample_list])
-    input_list.append(["alignment/" + s + ".bam.bai" for s in sample_list])
-
-    '''SNV / INDEL'''
-    input_list.append(["haplotypecaller/" + s + ".vcf.gz" for s in sample_list])
-    input_list.append(["haplotypecaller/" + s + ".vep.vcf.gz" for s in sample_list])
-    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.vcf.gz" for s in sample_list])
-    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.filteredAF.Cartagenia.vcf" for s in sample_list])
-    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.filteredAF.Cartagenia.noHLA.vcf" for s in sample_list])
-    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.filteredAF.Cartagenia.noHLA.chrX.vcf" for s in sample_list])
-    input_list.append(["haplotypecaller/" + s + ".vep.filteredSNP.filteredINDEL.filteredAF.Cartagenia.noHLA.chrX.vcfstats.vcf" for s in sample_list])
-
-    '''QC'''
-    input_list.append(["results/sex." + s + ".txt" for s in sample_list])
-
-    return input_list
-
-rule all:
-    input:
-        get_input()
-
-
-include: "src/Snakemake/workflow/Twist_exome_WP3_workflow.smk"
-
-
-
-
-
-
-
-
-report: "report/workflow.rst"  #get figures and stuff from run in a report
 
 rule all:
     input:
         "plots/quals.svg"
 
-from snakemake.utils import min_version
-min_version("6.0")
-
-configfile: "config.yaml"
+samples = pd.read_table(config["samples"], dtype=str).set_index("sample", drop=False)
 
 
-module bwa_mapping:
-    meta_wrapper: "0.72.0/meta/bio/bwa_mapping"
-
-
-use rule * from bwa_mapping
-
-
-def get_input(wildcards):
-    return config["samples"][wildcards.sample]
-
-
-use rule bwa_mem from bwa_mapping with:
+rule bwa_map:
     input:
-        get_input
-
-
-rule samtools_sort:
-    input:
-        "mapped/{sample}.bam"
+        "/beegfs-storage/data/ref_genomes/GRCh38/broadHomo_sapiens_assembly38.fasta",
+        "data/samples/{sample}.fastq"
     output:
-        "mapped/{sample}.sorted.bam"
-    params:
-        "-m 4G"
+        "mapped_reads/{sample}.bam"
     threads: 8
-    wrapper:
-        "0.2.0/bio/samtools/sort"
-
-rule samtools_index:
-    input:
-        "sorted_reads/{sample}.bam"
-    output:
-        "sorted_reads/{sample}.bam.bai"
     shell:
-        "samtools index {input}"
+        "bwa mem -t {threads} {input} | samtools view -Sb - > {output}"
+
+
+
+def getFastqs(wildcards):
+    fastq1 = config["samples"][wildcards.sample]
+    fastq2 = fastq1.replace("_R1_", "_R2_")
+    return [fastq1, fastq2]
+
+
+
+samples=$(cat SampleSheet.csv | grep ",TE$" | awk -F, '{print $1}')
+
+#Concatenate fastq-files
+cd Alignment_1/*/Fastq/
+#R1 och R2
+for sample in $samples
+do
+        S=$(/usr/bin/ls ${sample}* | awk -F_ '{print $2}' | grep -m1 S)
+        zcat ${sample}*R1_001.fastq.gz | pigz > /scratch/wp3/TE69_211015/Raw_data/${sample}_${S}_R1_001.fastq.gz
+        zcat ${sample}*R2_001.fastq.gz | pigz > /scratch/wp3/TE69_211015/Raw_data/${sample}_${S}_R2_001.fastq.gz
+done
+
+
+
+rule trimming:
+    input:
+        sample=["/scratch/wp3/TE69_211015/Raw_data/${sample}_R1_001.fastq.gz",
+        "/scratch/wp3/TE69_211015/Raw_data/${sample}_R2_001.fastq.gz"]
+    output:
+        trimmed=["/scratch/wp3/TE69_211015/trimmedfastq/{samples}_R1_001.fastq.gz",
+        "/scratch/wp3/TE69_211015/trimmedfastq/{samples}_R2_001.fastq.gz"],
+        html="/scratch/wp3/TE69_211015/qc/{sample}.html",
+        json="/scratch/wp3/TE69_211015/qc/{sample}_fastp.json",
+    log:
+        "/scratch/wp3/TE69_211015/logs/trimming-{sample}.log",
+    threads: 4
+    wrapper:
+        "0.78.0/bio/fastp"
+    conda:
+        "envs/environment.yml"
+    container:
+        config.get("fastp_pe", {}).get("container", config["default_container"])
+
+
+#fastp -i in.R1.fq.gz -I in.R2.fq.gz -o out.R1.fq.gz -O out.R2.fq.gz#
+
+#rule fastqc:
+#    input: /scratch/wp3/TE69_211015/trimmedfastq/{samples}_R2_001.fastq.gz
+#    output:/scratch/wp3/TE69_211015/FastQC
+#    threads: 16
+#    shell: fastqc -o {output} {input} -t {threads}
