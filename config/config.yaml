@@ -1,0 +1,9 @@
+samples:
+  D19-00831: /projects/wp3/nobackup/WGS/MGI/V300043112_WGS_20201023/fastq/D19-00831_R1/R2.fastq.gz
+  D19-00998: /projects/wp3/nobackup/WGS/MGI/V300043112_WGS_20201023/fastq/D19-00998_R1/R2.fastq.gz
+  D19-01001: /projects/wp3/nobackup/WGS/MGI/V300043112_WGS_20201023/fastq/D19-01001_R1/R2.fastq.gz
+
+genomic_ref: "Homo_sapiens_assembly38.fasta"
+
+images:
+        deepvariant: "/projects/wp4/nobackup/WGS_utveckling/deepvariant_test_run/img/deepvariant_1.0.0.sif"
