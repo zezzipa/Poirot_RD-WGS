@@ -27,7 +27,7 @@ The pipeline will be build one step at a time with step 1 and 2 being the most c
 - SMNca (https://onlinelibrary.wiley.com/doi/full/10.1002/humu.24120)
 - other ways to handle SMN1 och SMN2?
 
-**Steg 4: Repeat expansions ** 
+**Steg 4: Repeat expansions**
 
 - ExpansionHunter
 - if annotation is needed: STRanger
