@@ -17,9 +17,9 @@ The pipeline will be build one step at a time with step 1 and 2 being the most c
 - CNVnator
 - When these work and other parts of the pipeline it is possible to continue buildning this part. What is good right now? (Tiddit, CNVkit, delly, others?)
 - Combine the results from different callers: SVdb to one vcf-file
- - SVdb will help remove false positives?
+  - SVdb will help remove false positives?
 - Region Of Homozygosity and UniParental Disomy
- - AutoMap (https://github.com/mquinodo/AutoMap) and https://github.com/bjhall/upd
+  - AutoMap (https://github.com/mquinodo/AutoMap) and https://github.com/bjhall/upd
 
 **Steg 3: SMA**
 
