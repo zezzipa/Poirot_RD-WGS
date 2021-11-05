@@ -1,2 +1,2 @@
-sample	type	platform	run	lane	fastq1	fastq2	adapter
-NA24385 N platform? S15 
+sample  type  platform  run lane  fastq1  fastq2  adapter
+NA12878 N nextseq TEUDIval1_210122  S3  /projects/wp3/nobackup/TWIST/INBOX/TEUDIval1_210122/210122_NDX550407_RUO_0080_AHL3GKAFX2/Alignment_1/dummy/Fastq/D20-06203_S2_*_R1_001.fastq.gz /projects/wp3/nobackup/TWIST/INBOX/TEUDIval1_210122/210122_NDX550407_RUO_0080_AHL3GKAFX2/Alignment_1/dummy/Fastq/D20-06203_S2_*_R1_001.fastq.gz ATCGCCTATA,ATCGCCTATA,TATGAGCCAA,TATGAGCCAA
