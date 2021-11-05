@@ -1,8 +1,12 @@
+---
+
 samples: "samples.tsv"
 units: "units.tsv"
 
 reference:
   fasta: "/data/ref_genomes/GRCh38/broad/Homo_sapiens_assembly38.fasta"
+
+ default_container: "docker://hydragenetics/common:0.0.1"
 
 # tools:
 #   bamutil: "docker://marrip/bamutil:v1.0.14"

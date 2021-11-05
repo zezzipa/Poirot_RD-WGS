@@ -1,3 +1,11 @@
+
+#rule NAME:
+#    input: "path/to/inputfile", "path/to/other/inputfile"
+#    output: "path/to/outputfile", "path/to/another/outputfile"
+#    shell: "somecommand {input} {output}"
+
+
+
 snakemake -np call/all.vcf
 snakemake --cores 1 call/all.vcf
 snakemake --dag call/all.vcf | dot -Tsvg > dag.svg
