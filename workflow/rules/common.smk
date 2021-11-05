@@ -19,7 +19,10 @@ min_version("6.8.0")
 
 ### Set and validate config file
 
+
 configfile: "config.yaml"
+
+
 validate(config, schema="../schemas/config.schema.yaml")
 
 
@@ -42,6 +45,7 @@ validate(units, schema="../schemas/units.schema.yaml")
 
 
 ### Set wildcard constraints
+
 
 wildcard_constraints:
     sample="|".join(samples.index),

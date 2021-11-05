@@ -9,28 +9,33 @@ __license__ = "GPL-3"
 
 include: "rules/common.smk"
 
+
 report: "report/workflow.rst"
 
 
 module prealignment:
-    snakefile: github("hydra-genetics/prealignment", path="workflow/Snakefile", tag="resources-settings")
-    config: config
+    snakefile:
+        github("hydra-genetics/prealignment", path="workflow/Snakefile", tag="resources-settings")
+    config:
+        config
+
 
 use rule * from prealignment as module_*
 
 
-include: "rules/fq2vcf.smk"
-include: "rules/vcf_filter.smk"
+#include: "rules/fq2vcf.smk"
+#include: "rules/vcf_filter.smk"
 
 
 rule all:
     input:
-        "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/filter/NA12878.sort.vcf.gz"
+        "prealignment/merged/{sample}_{type}_{fastq}.fastq.gz",
+        "prealignment/merged/{sample}_{type}_{fastq}.fastq.gz",
+#        "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/filter/NA12878.sort.vcf.gz",
 #        expand("filter/{sample}.sort.vcf.gz"),
 
 
-#include: "rules/QC.smk"
-
+# include: "rules/QC.smk"
 # rule get_1000g_pos:
 #     input:
 #         vcf="deepvariant/{sample}.g.vcf.gz",

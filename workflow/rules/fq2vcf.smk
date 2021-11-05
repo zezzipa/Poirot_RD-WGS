@@ -1,6 +1,8 @@
+
+
 include: "common.smk"
 
-#
+
 # rule deepvariant_germline:
 #     input:
 #         ref="/data/ref_genomes/GRCh38/broad/Homo_sapiens_assembly38.fasta",
@@ -35,8 +37,9 @@ rule deepvariant_germline:
         n=2,
         dir="/scratch/wp3/GPU/",
     conda:
-        "../envs/parabricks.yaml",
-    shell: "pbrun deepvariant_germline \
+        "../envs/parabricks.yaml"
+    shell:
+        "pbrun deepvariant_germline \
         --ref {input.ref} \
         --in-fq {input.fq1} {input.fq2} \
         --out-bam {output.bam} \
