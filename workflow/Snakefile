@@ -1,4 +1,5 @@
 # vim: syntax=python tabstop=4 expandtab
+# vim: syntax=python tabstop=4 expandtab
 # coding: utf-8
 
 __author__ = "Jessika Nordin"
@@ -15,7 +16,7 @@ report: "report/workflow.rst"
 
 module prealignment:
     snakefile:
-        github("hydra-genetics/prealignment", path="workflow/Snakefile", tag="resources-settings")
+        github("hydra-genetics/prealignment", path="workflow/Snakefile", tag="develop")
     config:
         config
 
@@ -29,37 +30,10 @@ use rule * from prealignment as module_*
 
 rule all:
     input:
-        "prealignment/merged/{sample}_{type}_{fastq}.fastq.gz",
-        "prealignment/merged/{sample}_{type}_{fastq}.fastq.gz",
+        unpack(compile_output_list),
+
 #        "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/filter/NA12878.sort.vcf.gz",
 #        expand("filter/{sample}.sort.vcf.gz"),
 
 
 # include: "rules/QC.smk"
-# rule get_1000g_pos:
-#     input:
-#         vcf="deepvariant/{sample}.g.vcf.gz",
-#         bed="/projects/wp3/nobackup/Workspace/PEDDY/1000G.bed"
-#     output:
-#         "calls/{sample}_1000g.vcf.gz"
-#     shell:
-#         "vcftools --gzvcf {input.vcf} --bed {input.bed} --recode --recode-INFO-all --out {output}"
-#
-#
-# rule combine_vcf:
-#     input:
-#         vcf=expand("calls/{sample}_1000g.vcf.gz", sample=config["samples"])
-#     output:
-#         "calls/all.vcf.gz"
-#     shell:
-#         "vcf-merge {input.vcf} | bgzip -c > {output}"
-#
-#
-# rule peddy:
-#     input:
-#         vcf="calls/all.vcf.gz",
-#         ped="calls/all.ped"
-#     output:
-#         "all"
-#     shell:
-#         "/opt/ohpc/pub/pipelines/bcbio-nextgen/1.2.3/usr/local/bin/peddy -p 8 --plot --prefix {output} {input.vcf} {input.ped}"
