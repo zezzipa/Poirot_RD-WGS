@@ -31,7 +31,7 @@ use rule * from prealignment as module_*
 rule all:
     input:
         unpack(compile_output_list),
-
+    #    expand(deepvariant_germline/{sample}.vcf
 #        "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/filter/NA12878.sort.vcf.gz",
 #        expand("filter/{sample}.sort.vcf.gz"),
 

@@ -1,3 +1,26 @@
+#Make a virtual envirionment
+virtualenv venv -p python3.8
+source venv/bin/activate
+
+# Make a new line based on hydra genetics by:
+# hydra-genetics create-module
+
+pip install hydra-genetics
+pip install snakemake
+pip install -r requirements.txt
+module load singularity
+module load slurm-drmaa
+pip install --upgrade snakemake
+pip install drmaa
+
+#To run the pipeline with slurm or without slurm
+# -s where is the Snakefile, -d which is the working directory
+# units.tsv and sample.tsv should be in working directory
+snakemake --profile profiles/slurm/ -s workflow/Snakefile -d config/
+snakemake -s workflow/Snakefile -d config/ --use-singularity --singularity-args " -B /projects -B /beegfs-storage -B /scratch -B /data "
+
+
+
 
 #rule NAME:
 #    input: "path/to/inputfile", "path/to/other/inputfile"
@@ -10,6 +33,26 @@ snakemake -np call/all.vcf
 snakemake --cores 1 call/all.vcf
 snakemake --dag call/all.vcf | dot -Tsvg > dag.svg
 
+
+
+# rule deepvariant_germline:
+#     input:
+#         ref="/data/ref_genomes/GRCh38/broad/Homo_sapiens_assembly38.fasta",
+#         fq1="/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/NA12878_chr21.R1.fq",
+#         fq2="/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/NA12878_chr21.R2.fq",
+#     output:
+#         bam="/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/NA12878_chr21.bam",
+#         vcf="/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/NA12878.vcf",
+#     log:
+#         "NA12878.pb.fq2vcf.log",
+#     params:
+#         n=2,
+#         dir="/scratch/wp3/GPU",
+#     conda:
+#         "../envs/parabricks.yaml",
+#     shell: "pbrun deepvariant_germline --ref {input.ref} --in-fq {input.fq1} {input.fq2} \
+#         --out-bam {output.bam} --out-variants {output.vcf} \
+#         --tmp-dir {params.dir} --num-gpus {params.n} &> {log}"
 
 
 rule bwa_map:
