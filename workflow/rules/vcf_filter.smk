@@ -1,4 +1,3 @@
-include: "common.smk"
 
 
 rule variantfiltrationSNP:

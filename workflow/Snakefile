@@ -10,13 +10,16 @@ __license__ = "GPL-3"
 
 include: "rules/common.smk"
 
-configfile: "config.yaml"
+
 report: "report/workflow.rst"
 
 
 rule all:
     input:
-        ["vcf_filter/%s.sort.vcf.gz" % sample for sample in get_samples(samples)]
+        ["vcf_filter/%s.sort.vcf.gz" % sample for sample in get_samples(samples)],
+
+
+# can change the function in common-smk to use : unpack(compile_output_list),
 
 
 module prealignment:
@@ -31,9 +34,6 @@ use rule * from prealignment as module_*
 
 include: "rules/fq2vcf.smk"
 include: "rules/vcf_filter.smk"
-
-
-#       unpack(compile_output_list),
 
 
 # include: "rules/QC.smk"

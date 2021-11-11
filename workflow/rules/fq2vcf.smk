@@ -1,6 +1,4 @@
 
-include: "common.smk"
-
 
 rule deepvariant_germline:
     input:

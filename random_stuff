@@ -7,10 +7,11 @@
 #pip install -r requirements.txt
 #module load singularity
 #module load slurm-drmaa
+#module load bcbio-nextgen
 #pip install --upgrade snakemake
 #pip install drmaa
 #
-#vim /projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/venv/lib/python3.8/site-packages/hydra_genetics/utils/units.py
+#vim /projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/venv/lib/python3.8/site-packages/hydra_genetics/utils/units.py
 #rm [str]
 
 #Open your virtual environment
@@ -23,10 +24,10 @@ source venv/bin/activate
 # -s where is the Snakefile, -d which is the working directory
 # units.tsv and sample.tsv should be in working directory
 snakemake --profile profiles/slurm/ -s workflow/Snakefile -d config/
-snakemake -n -s workflow/Snakefile -d config/ --use-singularity --singularity-args " -B /projects -B /beegfs-storage -B /scratch -B /data "
-snakemake --core 1 -s ../workflow/Snakefile --use-singularity --singularity-args " -B /projects -B /beegfs-storage -B /scratch -B /data "
+snakemake -n -s workflow/Snakefile -d config/ --use-singularity --singularity-args " -B /beegfs-storage -B /scratch -B /data "
+snakemake --core 1 -s ../workflow/Snakefile --use-singularity --singularity-args " -B /beegfs-storage -B /scratch -B /data "
 
-
+snakemake -n -s /projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/workflow/Snakefile --use-singularity --singularity-args " -B /beegfs-storage -B /scratch -B /data "
 
 #rule NAME:
 #    input: "path/to/inputfile", "path/to/other/inputfile"
