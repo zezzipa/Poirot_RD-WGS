@@ -10,7 +10,7 @@ __license__ = "GPL-3"
 
 include: "rules/common.smk"
 
-
+configfile: "config.yaml"
 report: "report/workflow.rst"
 
 
@@ -24,14 +24,17 @@ module prealignment:
 use rule * from prealignment as module_*
 
 
-#include: "rules/fq2vcf.smk"
-#include: "rules/vcf_filter.smk"
+include: "rules/fq2vcf.smk"
+include: "rules/vcf_filter.smk"
 
 
 rule all:
     input:
-        unpack(compile_output_list),
-    #    expand(deepvariant_germline/{sample}.vcf
+        "vcf_filter/NA24385.sort.vcf.gz"
+        #expand("vcf_filter/{sample}.sort.vcf.gz", sample=config["samples"]),
+
+#       unpack(compile_output_list),
+#
 #        "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/filter/NA12878.sort.vcf.gz",
 #        expand("filter/{sample}.sort.vcf.gz"),
 

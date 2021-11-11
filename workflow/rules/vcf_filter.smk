@@ -3,7 +3,7 @@ include: "common.smk"
 
 rule variantfiltrationSNP:
     input:
-        "deepvariant_germline/{sample}.vcf",
+        "fq2vcf/{sample}.vcf",
     output:
         "vcf_filter/{sample}.snp.vcf",
     log:
@@ -16,12 +16,12 @@ rule variantfiltrationSNP:
         --out-file {output} \
         --mode SNP \
         --expression "MQRankSum < -12.5 || ReadPosRankSum < -8.0 || QD < 2.0 || FS > 60.0 || (QD < 10.0 && AD[0:1] / (AD[0:1] + AD[0:0]) < 0.25 && ReadPosRankSum < 0.0) || MQ < 30.0" \
-        --vcf_filter-name GATKCutoffSNP &> {log}'
+        --filter-name GATKCutoffSNP &> {log}'
 
 
 rule variantfiltrationINDEL:
     input:
-        "deepvariant_germline/{sample}.vcf",
+        "fq2vcf/{sample}.vcf",
     output:
         "vcf_filter/{sample}.indel.vcf",
     log:
@@ -34,7 +34,7 @@ rule variantfiltrationINDEL:
         --out-file {output} \
         --mode INDEL \
         --expression "ReadPosRankSum < -20.0 || QD < 2.0 || FS > 200.0 || SOR > 10.0 || (QD < 10.0 && AD[0:1] / (AD[0:1] + AD[0:0]) < 0.25 && ReadPosRankSum < 0.0)" \
-        --vcf_filter-name GATKCutoffIndel &> {log}'
+        --filter-name GATKCutoffIndel &> {log}'
 
 
 rule bgzip_vcf:
@@ -79,11 +79,11 @@ rule concat_vcf:
 
 rule sort_vcf:
     input:
-        "vcf_filter/{sample}.{sample}.concat.vcf.gz",
+        "vcf_filter/{sample}.concat.vcf.gz",
     output:
-        "vcf_filter/{sample}.{sample}.sort.vcf.gz",
+        "vcf_filter/{sample}.sort.vcf.gz",
     log:
-        "vcf_filter/{sample}.{sample}.sort.log",
+        "vcf_filter/{sample}.sort.log",
     conda:
         "../envs/parabricks.yaml"
     shell:
