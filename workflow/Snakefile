@@ -43,7 +43,7 @@ module qc:
         config
 
 
-use rule * from qc as module_*
+#use rule * from qc as module_*
 
 
 use rule picard_alignment_summary_metrics from qc as module_updated_pic_align_sum_met with:
