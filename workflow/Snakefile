@@ -14,6 +14,11 @@ configfile: "config.yaml"
 report: "report/workflow.rst"
 
 
+rule all:
+    input:
+        ["vcf_filter/%s.sort.vcf.gz" % sample for sample in get_samples(samples)]
+
+
 module prealignment:
     snakefile:
         github("hydra-genetics/prealignment", path="workflow/Snakefile", tag="develop")
@@ -28,15 +33,7 @@ include: "rules/fq2vcf.smk"
 include: "rules/vcf_filter.smk"
 
 
-rule all:
-    input:
-        "vcf_filter/NA24385.sort.vcf.gz"
-        #expand("vcf_filter/{sample}.sort.vcf.gz", sample=config["samples"]),
-
 #       unpack(compile_output_list),
-#
-#        "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/filter/NA12878.sort.vcf.gz",
-#        expand("filter/{sample}.sort.vcf.gz"),
 
 
 # include: "rules/QC.smk"

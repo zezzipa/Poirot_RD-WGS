@@ -1,26 +1,29 @@
-#Make a virtual envirionment
-virtualenv venv -p python3.8
+#Make a virtual envirionment and set it up
+#virtualenv venv -p python3.8
+#source venv/bin/activate
+#
+#pip install hydra-genetics
+#pip install snakemake
+#pip install -r requirements.txt
+#module load singularity
+#module load slurm-drmaa
+#pip install --upgrade snakemake
+#pip install drmaa
+#
+#vim /projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/venv/lib/python3.8/site-packages/hydra_genetics/utils/units.py
+#rm [str]
+
+#Open your virtual environment
 source venv/bin/activate
 
 # Make a new line based on hydra genetics by:
 # hydra-genetics create-module
 
-pip install hydra-genetics
-pip install snakemake
-pip install -r requirements.txt
-module load singularity
-module load slurm-drmaa
-pip install --upgrade snakemake
-pip install drmaa
-
-vim /projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/venv/lib/python3.8/site-packages/hydra_genetics/utils/units.py
-rm [str]
-
 #To run the pipeline with slurm or without slurm
 # -s where is the Snakefile, -d which is the working directory
 # units.tsv and sample.tsv should be in working directory
 snakemake --profile profiles/slurm/ -s workflow/Snakefile -d config/
-snakemake -s workflow/Snakefile -d config/ --use-singularity --singularity-args " -B /projects -B /beegfs-storage -B /scratch -B /data "
+snakemake -n -s workflow/Snakefile -d config/ --use-singularity --singularity-args " -B /projects -B /beegfs-storage -B /scratch -B /data "
 snakemake --core 1 -s ../workflow/Snakefile --use-singularity --singularity-args " -B /projects -B /beegfs-storage -B /scratch -B /data "
 
 
