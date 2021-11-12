@@ -3,13 +3,13 @@
 rule deepvariant_germline:
     input:
         ref=config["reference"]["fasta"],
-        reads=["prealignment/merged/{sample}_{type}_fastq1.fastq.gz",
-        "prealignment/merged/{sample}_{type}_fastq2.fastq.gz"],
+        reads=["prealignment/merged/{sample}_N_fastq1.fastq.gz",
+        "prealignment/merged/{sample}_N_fastq2.fastq.gz"],
     output:
-        bam="fq2vcf/{sample}_{type}.mark_duplicates.bam",
-        vcf="fq2vcf/{sample}_{type}.vcf",
+        bam="fq2vcf/{sample}.mark_duplicates.bam",
+        vcf="fq2vcf/{sample}.vcf",
     log:
-        "fq2vcf/{sample}_{type}.pb.fq2vcf.log",
+        "fq2vcf/{sample}.pb.fq2vcf.log",
     params:
         n=2,
         dir="/scratch/wp3/GPU/",
