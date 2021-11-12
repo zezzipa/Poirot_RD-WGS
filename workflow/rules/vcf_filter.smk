@@ -2,7 +2,7 @@
 
 rule variantfiltrationSNP:
     input:
-        "fq2vcf/{sample}_N.vcf",
+        "fq2vcf/{sample}.vcf",
     output:
         "vcf_filter/{sample}.snp.vcf",
     log:
@@ -20,7 +20,7 @@ rule variantfiltrationSNP:
 
 rule variantfiltrationINDEL:
     input:
-        "fq2vcf/{sample}_N.vcf",
+        "fq2vcf/{sample}.vcf",
     output:
         "vcf_filter/{sample}.indel.vcf",
     log:
