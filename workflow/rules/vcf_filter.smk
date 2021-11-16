@@ -20,11 +20,11 @@ rule variantfiltrationSNP:
 
 rule variantfiltrationINDEL:
     input:
-        "fq2vcf/{sample}_N.vcf",
+        "vcf_filter/{sample}.snp.vcf",
     output:
-        "vcf_filter/{sample}.indel.vcf",
+        "vcf_filter/{sample}.snpNindel.vcf",
     log:
-        "vcf_filter/{sample}.pb.INDELvcf_filter.log",
+        "vcf_filter/{sample}.pb.snpNindelvcf_filter.log",
     conda:
         "../envs/parabricks.yaml"
     shell:
@@ -38,11 +38,11 @@ rule variantfiltrationINDEL:
 
 rule bgzip_vcf:
     input:
-        "vcf_filter/{sample}.{wildcards}.vcf",
+        "vcf_filter/{sample}.snpNindel.vcf",
     output:
-        "vcf_filter/{sample}.{wildcards}.vcf.gz",
+        "vcf_filter/{sample}.snpNindel.vcf.gz",
     log:
-        "vcf_filter/{sample}.{wildcards}.gz.log",
+        "vcf_filter/{sample}.snpNindel.gz.log",
     conda:
         "../envs/parabricks.yaml"
     shell:
@@ -51,34 +51,18 @@ rule bgzip_vcf:
 
 rule tabix_vcf:
     input:
-        "vcf_filter/{sample}.{wildcards}.vcf.gz",
+        "vcf_filter/{sample}.snpNindel.vcf.gz",
     output:
-        "vcf_filter/{sample}.{wildcards}.vcf.gz.tbi",
+        "vcf_filter/{sample}.snpNindel.vcf.gz.tbi",
     conda:
         "../envs/parabricks.yaml"
     wrapper:
         "0.79.0/bio/tabix"
 
 
-rule concat_vcf:
-    input:
-        indel="vcf_filter/{sample}.indel.vcf.gz",
-        snp="vcf_filter/{sample}.snp.vcf.gz",
-        tindel="vcf_filter/{sample}.indel.vcf.gz.tbi",
-        tsnp="vcf_filter/{sample}.snp.vcf.gz.tbi",
-    output:
-        "vcf_filter/{sample}.concat.vcf.gz",
-    log:
-        "vcf_filter/{sample}.concat.log",
-    conda:
-        "../envs/parabricks.yaml"
-    shell:
-        "bcftools concat -a -O z {input.snp} {input.indel} -o {output}"
-
-
 rule sort_vcf:
     input:
-        "vcf_filter/{sample}.concat.vcf.gz",
+        "vcf_filter/{sample}.snpNindel.vcf.gz",
     output:
         "vcf_filter/{sample}.sort.vcf.gz",
     log:

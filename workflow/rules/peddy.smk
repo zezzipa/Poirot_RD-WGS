@@ -1,27 +1,40 @@
-# rule get_1000g_pos:
-#     input:
-#         vcf="deepvariant/{sample}.g.vcf.gz",
-#         bed="/projects/wp3/nobackup/Workspace/PEDDY/1000G.bed"
-#     output:
-#         "calls/{sample}_1000g.vcf.gz"
-#     shell:
-#         "vcftools --gzvcf {input.vcf} --bed {input.bed} --recode --recode-INFO-all --out {output}"
-#
-#
-# rule combine_vcf:
-#     input:
-#         vcf=expand("calls/{sample}_1000g.vcf.gz", sample=config["samples"])
-#     output:
-#         "calls/all.vcf.gz"
-#     shell:
-#         "vcf-merge {input.vcf} | bgzip -c > {output}"
-#
-#
+
+rule deepvariant:
+    input:
+        ref=config["reference"]["fasta"],
+        bam ="fq2vcf/{sample}_N.mark_duplicates.bam",
+        bed="/projects/wp3/nobackup/Workspace/PEDDY/1000G.bed",
+    output:
+        ogvcf="peddy/{sample}.g.vcf.gz",
+    conda:
+        "../envs/parabricks.yaml",
+    log:
+        "peddy/{sample}.deepvariant.log.txt"
+    shell:
+        "pbrun deepvariant --ref={input.ref} --interval {input.bed} \
+        --in-bam={input.reads} --gvcf --out-variants={output.ogvcf} \
+        &> {log} 2>&1"
+
+
+rule combine_vcf:
+    input:
+        vcf=["peddy/%s.g.vcf.gz" % sample for sample in get_samples(samples)],
+    output:
+        "peddy/all.vcf.gz",
+    log:
+        "peddy/merge.log.txt"
+    shell:
+        "vcf-merge {input.vcf} | bgzip -c > {output}"
+
+
+
 # rule peddy:
 #     input:
-#         vcf="calls/all.vcf.gz",
-#         ped="calls/all.ped"
+#         vcf="peddy/all.vcf.gz",
+#         ped="peddy/all.ped"
 #     output:
-#         "all"
+#         "peddy/peddy.results"
+#     log:
+#         "peddy/{sample}.peddy.log.txt"
 #     shell:
 #         "/opt/ohpc/pub/pipelines/bcbio-nextgen/1.2.3/usr/local/bin/peddy -p 8 --plot --prefix {output} {input.vcf} {input.ped}"
