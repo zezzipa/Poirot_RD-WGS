@@ -18,7 +18,11 @@ rule deepvariant:
 
 rule combine_vcf:
     input:
+<<<<<<< Updated upstream
         vcf=["peddy/%s.g.vcf.gz" % sample for sample in get_samples(samples)],
+=======
+        vcf="peddy/%s.g.vcf.gz" % sample for sample in get_samples(samples),
+>>>>>>> Stashed changes
     output:
         "peddy/all.vcf.gz",
     log:
