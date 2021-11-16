@@ -1,48 +1,12 @@
 
 
-rule variantfiltrationSNP:
-    input:
-        "fq2vcf/{sample}_N.vcf",
-    output:
-        "vcf_filter/{sample}.snp.vcf",
-    log:
-        "vcf_filter/{sample}.pb.SNPvcf_filter.log",
-    conda:
-        "../envs/parabricks.yaml"
-    shell:
-        'pbrun variantfiltration \
-        --in-vcf {input} \
-        --out-file {output} \
-        --mode SNP \
-        --expression "MQRankSum < -12.5 || ReadPosRankSum < -8.0 || QD < 2.0 || FS > 60.0 || (QD < 10.0 && AD[0:1] / (AD[0:1] + AD[0:0]) < 0.25 && ReadPosRankSum < 0.0) || MQ < 30.0" \
-        --filter-name GATKCutoffSNP &> {log}'
-
-
-rule variantfiltrationINDEL:
-    input:
-        "vcf_filter/{sample}.snp.vcf",
-    output:
-        "vcf_filter/{sample}.snpNindel.vcf",
-    log:
-        "vcf_filter/{sample}.pb.snpNindelvcf_filter.log",
-    conda:
-        "../envs/parabricks.yaml"
-    shell:
-        'pbrun variantfiltration \
-        --in-vcf {input} \
-        --out-file {output} \
-        --mode INDEL \
-        --expression "ReadPosRankSum < -20.0 || QD < 2.0 || FS > 200.0 || SOR > 10.0 || (QD < 10.0 && AD[0:1] / (AD[0:1] + AD[0:0]) < 0.25 && ReadPosRankSum < 0.0)" \
-        --filter-name GATKCutoffIndel &> {log}'
-
-
 rule bgzip_vcf:
     input:
-        "vcf_filter/{sample}.snpNindel.vcf",
+        "fq2vcf/{sample}.vcf",
     output:
-        "vcf_filter/{sample}.snpNindel.vcf.gz",
+        "vcf_filter/{sample}.vcf.gz",
     log:
-        "vcf_filter/{sample}.snpNindel.gz.log",
+        "vcf_filter/{sample}.gz.log",
     conda:
         "../envs/parabricks.yaml"
     shell:
@@ -51,9 +15,9 @@ rule bgzip_vcf:
 
 rule tabix_vcf:
     input:
-        "vcf_filter/{sample}.snpNindel.vcf.gz",
+        "vcf_filter/{sample}.vcf.gz",
     output:
-        "vcf_filter/{sample}.snpNindel.vcf.gz.tbi",
+        "vcf_filter/{sample}.vcf.gz.tbi",
     conda:
         "../envs/parabricks.yaml"
     wrapper:
@@ -62,7 +26,8 @@ rule tabix_vcf:
 
 rule sort_vcf:
     input:
-        "vcf_filter/{sample}.snpNindel.vcf.gz",
+        "vcf_filter/{sample}.vcf.gz",
+        "vcf_filter/{sample}.vcf.gz.tbi",
     output:
         "vcf_filter/{sample}.sort.vcf.gz",
     log:
