@@ -10,6 +10,7 @@ default_container: "docker://hydragenetics/common:0.0.1"
 
 reference:
   fasta: "/data/ref_genomes/GRCh38/broad/Homo_sapiens_assembly38.fasta"
+  1000Ginterval: "/projects/wp3/nobackup/Workspace/PEDDY/1000G.bed"
   design_intervals: "/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Exome_Target_hg19_interval_list.bed"
   design_bed: "/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Exome_Target_hg19.bed"
 
