@@ -17,7 +17,7 @@ report: "report/workflow.rst"
 rule all:
     input:
         ["vcf_filter/%s.sort.vcf.gz" % sample for sample in get_samples(samples)],
-        "peddy/all.vcf.gz",
+        ["peddy/%s.g.vcf.gz" % sample for sample in get_samples(samples)],
 
 
 # can change the function in common-smk to use : unpack(compile_output_list),
