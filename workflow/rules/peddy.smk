@@ -3,7 +3,7 @@ rule deepvariant:
     input:
         ref=config["reference"]["fasta"],
         bam="fq2vcf/{sample}.mark_duplicates.bam",
-        bed="/projects/wp3/nobackup/Workspace/PEDDY/1000G.bed",
+        bed="../1000G.bed",
     output:
         ogvcf="peddy/{sample}.g.vcf.gz",
     log:
@@ -11,9 +11,10 @@ rule deepvariant:
     conda:
         "../envs/parabricks.yaml"
     shell:
-        "pbrun deepvariant --ref={input.ref} --interval={input.bed} \
-        --in-bam={input.bam} --gvcf --out-variants={output.ogvcf} \
-        &> {log} 2>&1"
+        "pbrun deepvariant --ref {input.ref} --interval-file {input.bed} \
+        --in-bam {input.bam} --gvcf --out-variants {output.ogvcf} \
+        &> {log}"
+
 
 
 rule combine_vcf:
