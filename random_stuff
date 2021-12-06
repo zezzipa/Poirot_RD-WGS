@@ -1,15 +1,15 @@
 #Make a virtual envirionment and set it up
-#virtualenv venv -p python3.8
-#source venv/bin/activate
+virtualenv venv -p python3.8
+source venv/bin/activate
 #
-#pip install hydra-genetics
-#pip install snakemake
-#pip install -r requirements.txt
-#module load singularity
-#module load slurm-drmaa
-#module load bcbio-nextgen
-#pip install --upgrade snakemake
-#pip install drmaa
+pip install hydra-genetics
+pip install snakemake
+pip install -r requirements.txt
+module load singularity
+module load slurm-drmaa
+module load bcbio-nextgen
+pip install --upgrade snakemake
+pip install drmaa
 #
 #vim /projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/venv/lib/python3.8/site-packages/hydra_genetics/utils/units.py
 #rm [str]
