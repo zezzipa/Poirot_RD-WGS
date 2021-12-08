@@ -16,9 +16,10 @@ report: "report/workflow.rst"
 
 rule all:
     input:
-        ["vcf_filter/%s.sort.vcf.gz" % sample for sample in get_samples(samples)],
+        ["vcf_filter/%s.vcf.gz" % sample for sample in get_samples(samples)],
 
 
+#["mosdepth/%s/%s.regions.bed.gz" % panel,sample for panel in config[genepanels] for sample in get_samples(samples)]
 # can change the function in common-smk to use : unpack(compile_output_list),
 
 
@@ -34,42 +35,3 @@ use rule * from prealignment as module_*
 
 include: "rules/fq2vcf.smk"
 include: "rules/vcf_filter.smk"
-
-
-module qc:
-    snakefile:
-        github("hydra-genetics/qc", path="workflow/Snakefile", tag="develop")
-    config:
-        config
-
-
-#use rule * from qc as module_*
-
-
-use rule picard_alignment_summary_metrics from qc as module_updated_pic_align_sum_met with:
-    input:
-        bam="fq2vcf/{sample}.mark_duplicates.bam",
-    output:
-        metrics="qc/picard_alignment_summary_metrics/{sample}.alignment_summary_metrics.txt",
-
-
-use rule picard_duplication_metrics from qc as module_updated_pic_dup_met with:
-    input:
-        bam="fq2vcf/{sample}.mark_duplicates.bam",
-    output:
-        metrics="qc/picard_duplication_metrics/{sample}.duplication_metrics.txt",
-
-
-use rule picard_insert_size from qc as module_updated_pic_ins_size with:
-    input:
-        bam="fq2vcf/{sample}.mark_duplicates.bam",
-    output:
-        txt="qc/picard_insert_size/{sample}.insert_size_metrics.txt",
-        pdf="qc/picard_insert_size/{sample}.insert_size_histogram.pdf",
-
-
-use rule samtools_stats from qc as module_updated_samtools_stats with:
-    input:
-        bam="fq2vcf/{sample}.mark_duplicates.bam",
-    output:
-        "qc/samtools_stats/{sample}.samtools-stats.txt",
