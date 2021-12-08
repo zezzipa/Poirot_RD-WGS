@@ -14,6 +14,9 @@ reference:
   design_intervals: "/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Exome_Target_hg19_interval_list.bed"
   design_bed: "/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Exome_Target_hg19.bed"
 
+programdir:
+  dir: "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/workflow"
+
 genepanels:
   - /projects/wp3/Reference_files/Manifest/Clinical_research_exome/Gene_panels/ALS.bed
   - /projects/wp3/Reference_files/Manifest/Clinical_research_exome/Gene_panels/Aortopatier.bed
