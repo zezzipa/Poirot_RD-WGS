@@ -19,7 +19,7 @@ rule changeM2MT:
     input:
         "vcf_filter/{sample}_ref.vcf",
     output:
-        temp("vcf_filter/{sample}_chrMT.vcf"),
+        temp("vcf_filter/{sample}.vcf"),
     log:
         "vcf_filter/{sample}_chrMT.log",
     shell:
