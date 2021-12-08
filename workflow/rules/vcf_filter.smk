@@ -28,7 +28,7 @@ rule changeM2MT:
 
 rule bgzipNtabix:
     input:
-        "vcf_filter/{sample}_chrMT.vcf",
+        "vcf_filter/{sample}.vcf",
     output:
         "vcf_filter/{sample}.vcf.gz",
         "vcf_filter/{sample}.vcf.gz.tbi",
