@@ -16,9 +16,10 @@ report: "report/workflow.rst"
 
 rule all:
     input:
-        ["vcf_filter/%s.sort.vcf.gz" % sample for sample in get_samples(samples)],
+        ["vcf_filter/%s.vcf.gz" % sample for sample in get_samples(samples)],
 
 
+#["mosdepth/%s/%s.regions.bed.gz" % panel,sample for panel in config[genepanels] for sample in get_samples(samples)]
 # can change the function in common-smk to use : unpack(compile_output_list),
 
 
