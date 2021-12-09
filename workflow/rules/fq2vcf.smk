@@ -7,7 +7,7 @@ rule deepvariant_germline:
         "prealignment/merged/{sample}_N_fastq2.fastq.gz"],
     output:
         bam="fq2vcf/{sample}.mark_duplicates.bam",
-        vcf="fq2vcf/{sample}.vcf",
+        vcf=temp("fq2vcf/{sample}.vcf"),
 #       vcf=temp("fq2vcf/{sample}.vcf"),
     log:
         "fq2vcf/{sample}.pb.fq2vcf.log",
