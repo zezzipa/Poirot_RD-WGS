@@ -1,39 +1,53 @@
-#
-# rule deepvariant:
-#     input:
-#         ref=config["reference"]["fasta"],
-#         bam="fq2vcf/{sample}.mark_duplicates.bam",
-#         bed="1000G.bed",
-#     output:
-#         ogvcf="peddy/{sample}.g.vcf.gz",
-#     log:
-#         "peddy/{sample}.deepvariant.log.txt",
-#     conda:
-#         "../envs/parabricks.yaml"
-#     shell:
-#         "pbrun deepvariant --ref {input.ref} --interval-file {input.bed} \
-#         --in-bam {input.bam} --gvcf --out-variants {output.ogvcf} \
-#         &> {log}"
 
-
-rule zipNix:
+rule deepvariant:
     input:
-        "fq2vcf/{sample}.vcf",
+        ref=config["reference"]["fasta"],
+        bam="fq2vcf/{sample}.mark_duplicates.bam",
+        bed=config["reference"]["1000Ginterval"],
     output:
-        "fq2vcf/{sample}.vcf.gz",
-        "fq2vcf/{sample}.vcf.gz.tbi",
+        ogvcf="peddy/{sample}.g.vcf.gz",
+    log:
+        "peddy/{sample}.deepvariant.log.txt",
+    conda:
+        "../envs/parabricks.yaml"
+    shell:
+        "pbrun deepvariant --ref {input.ref} --interval-file {input.bed} \
+        --in-bam {input.bam} --gvcf --out-variants {output.ogvcf} \
+        &> {log}"
+
+
+
+rule tabix:
+    input:
+        "peddy/{sample}.g.vcf.gz",
+    output:
+        "peddy/{sample}.g.vcf.gz.tbi",
     log:
         "fq2vcf/{sample}.bgzip-tabix.log",
     conda:
         "../envs/parabricks.yaml"
     shell:
-        "( bgzip {input} && tabix {input}.gz ) &> {log}"
+        "( tabix {input} ) &> {log}"
+
+
+# rule zipNix:
+#     input:
+#         "fq2vcf/{sample}.vcf",
+#     output:
+#         "fq2vcf/{sample}.vcf.gz",
+#         "fq2vcf/{sample}.vcf.gz.tbi",
+#     log:
+#         "fq2vcf/{sample}.bgzip-tabix.log",
+#     conda:
+#         "../envs/parabricks.yaml"
+#     shell:
+#         "( bgzip {input} && tabix {input}.gz ) &> {log}"
 
 
 rule combine_vcf:
     input:
-        vcf=["fq2vcf/%s.vcf.gz" % sample for sample in get_samples(samples)],
-        tbi=["fq2vcf/%s.vcf.gz.tbi" % sample for sample in get_samples(samples)]
+        vcf=["peddy/%s.g.vcf.gz" % sample for sample in get_samples(samples)],
+        tbi=["peddy/%s.g.vcf.gz.tbi" % sample for sample in get_samples(samples)]
     output:
         gz="peddy/all.vcf.gz",
         tbi="peddy/all.vcf.gz.tbi",
