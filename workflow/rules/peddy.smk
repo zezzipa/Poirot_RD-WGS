@@ -16,7 +16,6 @@ rule deepvariant:
         &> {log}"
 
 
-
 rule tabix:
     input:
         "peddy/{sample}.g.vcf.gz",
