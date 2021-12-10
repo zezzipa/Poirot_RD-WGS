@@ -4,7 +4,7 @@
     "username": "jessika",
     "password": "Zezzipa0522",
     "port": 22,
-    "remotePath": "",
+    "remotePath": "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test",
     "uploadOnSave": true,
     "uploadConfigFile": false
 }
