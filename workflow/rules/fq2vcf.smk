@@ -7,12 +7,13 @@ rule deepvariant_germline:
         "prealignment/merged/{sample}_N_fastq2.fastq.gz"],
     output:
         bam="fq2vcf/{sample}.mark_duplicates.bam",
-        vcf="fq2vcf/{sample}.vcf",
+        vcf="fq2vcf/{sample}.g.vcf.gz",
     log:
         "fq2vcf/{sample}.pb.fq2vcf.log",
     params:
         n=2,
         dir="/scratch/wp3/GPU/",
+        date="`r format(Sys.time(), '%d %B, %Y')`"
     conda:
         "../envs/parabricks.yaml"
     shell:
@@ -20,9 +21,13 @@ rule deepvariant_germline:
         --ref {input.ref} \
         --in-fq {input.reads} \
         --out-bam {output.bam} \
-        --out-variants {output.vcf} \
+        --gvcf --out-variants {output.vcf} \
         --num-gpus {params.n} \
-        --tmp-dir {params.dir} &> {log}"
+        --tmp-dir {params.dir} \
+        --read-group-sm {sample} \
+        --read-group-lb illumina \
+        --read-group-pl {params.date}_deepvariant_germline \
+        --read-group-id-prefix {sample}  &> {log}"
 
 
 #--read-group-sm
