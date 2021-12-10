@@ -1,7 +1,19 @@
 
+
+rule gvcf2vcf:
+    input:
+        "fq2vcf/{sample}.g.vcf.gz",
+    output:
+        temp("vcf_filter/{sample}.recode.vcf"),
+    log:
+        "vcf_filter/{sample}.recode.log",
+    shell:
+        "vcftools --gzvcf {input} --remove-filtered \".\" --recode --recode-INFO-all --out {wildcards.sample} &> {log}"
+
+
 rule addRef:
     input:
-        vcf="fq2vcf/{sample}.vcf",
+        vcf="vcf_filter/{sample}.recode.vcf",
         ref=config["reference"]["fasta"],
     output:
         temp("vcf_filter/{sample}_ref.vcf"),

@@ -24,10 +24,10 @@ rule deepvariant_germline:
         --gvcf --out-variants {output.vcf} \
         --num-gpus {params.n} \
         --tmp-dir {params.dir} \
-        --read-group-sm {sample} \
+        --read-group-sm {wildcards.sample} \
         --read-group-lb illumina \
         --read-group-pl {params.date}_deepvariant_germline \
-        --read-group-id-prefix {sample}  &> {log}"
+        --read-group-id-prefix {wildcards.sample}  &> {log}"
 
 
 #--read-group-sm

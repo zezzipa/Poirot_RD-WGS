@@ -20,7 +20,9 @@ min_version("6.8.0")
 ### Set and validate config file
 
 
-configfile: "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/config/config.yaml"
+configfile: "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS-master/config/config.yaml"
+
+
 validate(config, schema="../schemas/config.schema.yaml")
 
 
