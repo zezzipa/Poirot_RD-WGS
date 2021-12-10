@@ -1,92 +1,40 @@
 
-
-rule variantfiltrationSNP:
+rule addRef:
     input:
-        "fq2vcf/{sample}.vcf",
+        vcf="fq2vcf/{sample}.vcf",
+        ref=config["reference"]["fasta"],
     output:
-        "vcf_filter/{sample}.snp.vcf",
+        temp("vcf_filter/{sample}_ref.vcf"),
     log:
-        "vcf_filter/{sample}.pb.SNPvcf_filter.log",
+        "vcf_filter/{sample}_add_ref.log",
+    params:
+        config["programdir"]["dir"],
     conda:
         "../envs/parabricks.yaml"
     shell:
-        'pbrun variantfiltration \
-        --in-vcf {input} \
-        --out-file {output} \
-        --mode SNP \
-        --expression "MQRankSum < -12.5 || ReadPosRankSum < -8.0 || QD < 2.0 || FS > 60.0 || (QD < 10.0 && AD[0:1] / (AD[0:1] + AD[0:0]) < 0.25 && ReadPosRankSum < 0.0) || MQ < 30.0" \
-        --filter-name GATKCutoffSNP &> {log}'
+        "( python {params}/scripts/ref_vcf.py {input.vcf} {input.ref} {output} ) &> {log}"
 
 
-rule variantfiltrationINDEL:
+rule changeM2MT:
     input:
-        "fq2vcf/{sample}.vcf",
+        "vcf_filter/{sample}_ref.vcf",
     output:
-        "vcf_filter/{sample}.indel.vcf",
+        temp("vcf_filter/{sample}.vcf"),
     log:
-        "vcf_filter/{sample}.pb.INDELvcf_filter.log",
+        "vcf_filter/{sample}_chrMT.log",
+    shell:
+        """( awk '{{gsub(/chrM/,"chrMT"); print}}' {input} > {output} ) &> {log}"""
+
+
+rule bgzipNtabix:
+    input:
+        "vcf_filter/{sample}.vcf",
+    output:
+        "vcf_filter/{sample}.vcf.gz",
+        "vcf_filter/{sample}.vcf.gz.tbi",
+    log:
+        "vcf_filter/{sample}.bgzip-tabix.log",
     conda:
         "../envs/parabricks.yaml"
     shell:
-        'pbrun variantfiltration \
-        --in-vcf {input} \
-        --out-file {output} \
-        --mode INDEL \
-        --expression "ReadPosRankSum < -20.0 || QD < 2.0 || FS > 200.0 || SOR > 10.0 || (QD < 10.0 && AD[0:1] / (AD[0:1] + AD[0:0]) < 0.25 && ReadPosRankSum < 0.0)" \
-        --filter-name GATKCutoffIndel &> {log}'
-
-
-rule bgzip_vcf:
-    input:
-        "vcf_filter/{sample}.{wildcards}.vcf",
-    output:
-        "vcf_filter/{sample}.{wildcards}.vcf.gz",
-    log:
-        "vcf_filter/{sample}.{wildcards}.gz.log",
-    conda:
-        "../envs/parabricks.yaml"
-    shell:
-        "(bgzip -c {input} > {output}) &> {log}"
-
-
-rule tabix_vcf:
-    input:
-        "vcf_filter/{sample}.{wildcards}.vcf.gz",
-    output:
-        "vcf_filter/{sample}.{wildcards}.vcf.gz.tbi",
-    conda:
-        "../envs/parabricks.yaml"
-    wrapper:
-        "0.79.0/bio/tabix"
-
-
-rule concat_vcf:
-    input:
-        indel="vcf_filter/{sample}.indel.vcf.gz",
-        snp="vcf_filter/{sample}.snp.vcf.gz",
-        tindel="vcf_filter/{sample}.indel.vcf.gz.tbi",
-        tsnp="vcf_filter/{sample}.snp.vcf.gz.tbi",
-    output:
-        "vcf_filter/{sample}.concat.vcf.gz",
-    log:
-        "vcf_filter/{sample}.concat.log",
-    conda:
-        "../envs/parabricks.yaml"
-    shell:
-        "bcftools concat -a -O z {input.snp} {input.indel} -o {output}"
-
-
-rule sort_vcf:
-    input:
-        "vcf_filter/{sample}.concat.vcf.gz",
-    output:
-        "vcf_filter/{sample}.sort.vcf.gz",
-    log:
-        "vcf_filter/{sample}.sort.log",
-    conda:
-        "../envs/parabricks.yaml"
-    shell:
-        "bcftools sort -O z {input} -o {output}"
-
-
-#    bcftools vcf_filter -e 'AF<0.25' ${vcf_input} -o ${vcf_output}
+        "( bgzip {input} && tabix {input}.gz ) &> {log}"
