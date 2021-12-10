@@ -68,3 +68,7 @@ rule peddy:
         "peddy/peddy.log.txt",
     shell:
         "/opt/ohpc/pub/pipelines/bcbio-nextgen/1.2.3/usr/local/bin/peddy -p 8 --sites hg38 --plot --prefix {output} {input.vcf} {input.ped} &> {log}"
+
+
+
+plink_linux_x86_64_20200916/plink --vcf /scratch/wp3/GPU/GMS/all.vcf.gz --make-bed --out GMS

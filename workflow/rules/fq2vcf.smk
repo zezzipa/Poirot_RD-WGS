@@ -7,7 +7,7 @@ rule deepvariant_germline:
         "prealignment/merged/{sample}_N_fastq2.fastq.gz"],
     output:
         bam="fq2vcf/{sample}.mark_duplicates.bam",
-        vcf=temp("fq2vcf/{sample}.vcf"),
+        vcf=temp("fq2vcf/{sample}.g.vcf.gz"),
 #       vcf=temp("fq2vcf/{sample}.vcf"),
     log:
         "fq2vcf/{sample}.pb.fq2vcf.log",
@@ -22,7 +22,7 @@ rule deepvariant_germline:
         --ref {input.ref} \
         --in-fq {input.reads} \
         --out-bam {output.bam} \
-        --out-variants {output.vcf} \
+        --gvcf --out-variants {output.vcf} \
         --num-gpus {params.n} \
         --tmp-dir {params.dir} \
         --read-group-sm {sample} \
