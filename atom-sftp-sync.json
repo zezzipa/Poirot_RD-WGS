@@ -1,0 +1,10 @@
+{
+    "type": "sftp",
+    "host": "marvin.cgu.igp.uu.se",
+    "username": "jessika",
+    "password": "Zezzipa0522",
+    "port": 22,
+    "remotePath": "",
+    "uploadOnSave": true,
+    "uploadConfigFile": false
+}
