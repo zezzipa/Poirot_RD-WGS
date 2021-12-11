@@ -1,41 +1,41 @@
 
 rule addRef:
     input:
-        vcf="fq2vcf/{sample}.vcf",
+        vcf="alignment/snv_indels/deepvariant/{sample}_{type}.g.vcf.gz",
         ref=config["reference"]["fasta"],
     output:
-        temp("vcf_filter/{sample}_ref.vcf"),
+        temp("vcf_filter/{sample}_{type}_ref.vcf"),
     log:
-        "vcf_filter/{sample}_add_ref.log",
+        "vcf_filter/{sample}_{type}_add_ref.log",
     params:
         config["programdir"]["dir"],
     conda:
-        "../envs/parabricks.yaml"
+        "../envs/poirot.yaml"
     shell:
         "( python {params}/scripts/ref_vcf.py {input.vcf} {input.ref} {output} ) &> {log}"
 
 
 rule changeM2MT:
     input:
-        "vcf_filter/{sample}_ref.vcf",
+        "vcf_filter/{sample}_{type}_ref.vcf",
     output:
-        temp("vcf_filter/{sample}.vcf"),
+        temp("vcf_filter/{sample}_{type}.vcf"),
     log:
-        "vcf_filter/{sample}_chrMT.log",
+        "vcf_filter/{sample}_{type}_chrMT.log",
     shell:
         """( awk '{{gsub(/chrM/,"chrMT"); print}}' {input} > {output} ) &> {log}"""
 
 
 rule bgzipNtabix:
     input:
-        "vcf_filter/{sample}.vcf",
+        "vcf_filter/{sample}_{type}.vcf",
     output:
-        "vcf_filter/{sample}.vcf.gz",
-        "vcf_filter/{sample}.vcf.gz.tbi",
+        "vcf_filter/{sample}_{type}.vcf.gz",
+        "vcf_filter/{sample}_{type}.vcf.gz.tbi",
     log:
-        "vcf_filter/{sample}.bgzip-tabix.log",
+        "vcf_filter/{sample}_{type}.bgzip-tabix.log",
     conda:
-        "../envs/parabricks.yaml"
+        "../envs/poirot.yaml"
     shell:
         "( bgzip {input} && tabix {input}.gz ) &> {log}"
 

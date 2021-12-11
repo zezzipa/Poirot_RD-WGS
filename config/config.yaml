@@ -10,9 +10,9 @@ default_container: "docker://hydragenetics/common:0.0.1"
 
 reference:
   fasta: "/data/ref_genomes/GRCh38/broad/Homo_sapiens_assembly38.fasta"
-  1000Ginterval: "/projects/wp3/nobackup/Workspace/PEDDY/1000G.bed"
+#  1000Ginterval: "/projects/wp3/nobackup/Workspace/PEDDY/1000G.bed"
   design_intervals: "/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Exome_Target_hg19_interval_list.bed"
-  design_bed: "/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Exome_Target_hg19.bed"
+
 
 programdir:
   dir: "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/workflow"
@@ -38,6 +38,8 @@ genepanels:
   - /projects/wp3/Reference_files/Manifest/Clinical_research_exome/Gene_panels/Sotos.bed
   - /projects/wp3/Reference_files/Manifest/Clinical_research_exome/Gene_panels/Trombocytopenier.bed
 
+mosdepth:
+  container: "docker://hydragenetics/mosdepth:0.3.2"
 
 #Tror inte dessa behövs i min config, det hämtas ju i modulerna
 trimmer_software: "fastp"

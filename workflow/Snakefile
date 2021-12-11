@@ -46,33 +46,10 @@ include: "rules/peddy.smk"
 #         config
 #
 #
-# #use rule * from qc as module_*
-#
-#
-# use rule picard_alignment_summary_metrics from qc as module_updated_pic_align_sum_met with:
-#     input:
-#         bam="fq2vcf/{sample}.mark_duplicates.bam",
-#     output:
-#         metrics="qc/picard_alignment_summary_metrics/{sample}.alignment_summary_metrics.txt",
-#
-#
-# use rule picard_duplication_metrics from qc as module_updated_pic_dup_met with:
-#     input:
-#         bam="fq2vcf/{sample}.mark_duplicates.bam",
-#     output:
-#         metrics="qc/picard_duplication_metrics/{sample}.duplication_metrics.txt",
-#
-#
-# use rule picard_insert_size from qc as module_updated_pic_ins_size with:
-#     input:
-#         bam="fq2vcf/{sample}.mark_duplicates.bam",
-#     output:
-#         txt="qc/picard_insert_size/{sample}.insert_size_metrics.txt",
-#         pdf="qc/picard_insert_size/{sample}.insert_size_histogram.pdf",
-#
-#
-# use rule samtools_stats from qc as module_updated_samtools_stats with:
-#     input:
-#         bam="fq2vcf/{sample}.mark_duplicates.bam",
-#     output:
-#         "qc/samtools_stats/{sample}.samtools-stats.txt",
+# use rule fastqc from qc as module_fastqc
+# use rule picard_duplication_metrics from qc as module_pic_dup_met
+# use rule picard_insert_size from qc as module_pic_ins_size
+# use rule picard_alignment_summary_metrics from qc as module_pic_align_sum_met
+# use rule samtools_stats from qc as module_updated_samtools_stats
+# use rule pickard_hs_metrics from qc as module_pis_hs_met
+# use rule multiqc from qc as module_multiqc

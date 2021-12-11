@@ -3,64 +3,25 @@
 
 rule mosdepth_bed:
     input:
-        bam="fq2vcf/{sample}.mark_duplicates.bam",
-        bai="fq2vcf/{sample}.mark_duplicates.bam.bai",
-        bed=/projects/wp3/Reference_files/Manifest/Clinical_research_exome/Gene_panels/HHT.bed,
+        bam="alignment/merge_bam/{sample}_{type}.mark_duplicates.bam",
+        bai="alignment/merge_bam/{sample}_{type}.mark_duplicates.bam.bai",
+        bed=config["genepanels"],
     output:
-        "mosdepth/{sample}.mosdepth.global.dist.txt",
-        "mosdepth/{sample}.mosdepth.region.dist.txt",
-        "mosdepth/{sample}.regions.bed.gz",
-        summary="mosdepth/{sample}.mosdepth.summary.txt",  # this named output is required for prefix parsing
+        bed="qc/mosdepth/{sample}_{type}.regions.bed.gz",
+        glob="qc/mosdepth/{sample}_{type}.mosdepth.global.dist.txt",
+        region="qc/mosdepth/{sample}_{type}.mosdepth.region.dist.txt",
+        summary="qc/mosdepth/{sample}_{type}.mosdepth.summary.txt",
     log:
-        "mosdepth/{sample}.log",
+        "qc/mosdepth/{sample}.log",
     params:
-        extra="--no-per-base --use-median",  # optional
-    # additional decompression threads through `--threads`
-    threads: 4  # This value - 1 will be sent to `--threads`
+        extra="--no-per-base --use-median",  # optional # additional decompression threads through `--threads`
+    container:
+        config.get("mosdepth", {}).get("container", config["default_container"])
+    conda:
+        "../envs/poirot.yaml"
+    message:
+        "{rule}: Calculating coverage for {wildcards.sample}_{wildcards.type}"
     wrapper:
-        "master/bio/mosdepth"
+        "0.80.2/bio/mosdepth"
 
-
-
-
-
-
-
-
-rule mosdepth_bed:
-    input:
-        bam="fq2vcf/{sample}.mark_duplicates.bam",
-        bai="fq2vcf/{sample}.mark_duplicates.bam.bai",
-        bed={genepanels}.bed,
-    output:
-        "{genepanel}/{sample}.{genepanel}.mosdepth.global.dist.txt",
-        "mosdepth_bed/{sample}.mosdepth.region.dist.txt",
-        "mosdepth_bed/{sample}.regions.bed.gz",
-        summary="mosdepth_bed/{sample}.mosdepth.summary.txt",  # this named output is required for prefix parsing
-    log:
-        "logs/mosdepth_bed/{sample}.log",
-    params:
-        extra="--no-per-base --use-median",  # optional
-    # additional decompression threads through `--threads`
-    threads: 4  # This value - 1 will be sent to `--threads`
-    wrapper:
-        "master/bio/mosdepth"
-
-
-
-#rule mosdepth:
-#    input:
-#        bam="aligned/{sample}.bam",
-#        bai="aligned/{sample}.bam.bai",
-#    output:
-#        "mosdepth/{sample}.mosdepth.global.dist.txt",
-#        "mosdepth/{sample}.per-base.bed.gz",  # produced unless --no-per-base specified
-#        summary="mosdepth/{sample}.mosdepth.summary.txt",  # this named output is required for prefix parsing
-#    log:
-#        "mosdepth/{sample}.log",
-#    params:
-#        extra="--fast-mode",  # optional
-#    # additional decompression threads through `--threads`
-#    threads: 4  # This value - 1 will be sent to `--threads`
-#    wrapper:
-#        "master/bio/mosdepth"
+        #0.77.0/bio/mosdepth
