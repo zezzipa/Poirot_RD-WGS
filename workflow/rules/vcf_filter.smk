@@ -1,12 +1,25 @@
 
+
+rule gvcf2vcf:
+    input:
+        "alignment/snv_indels/deepvariant/{sample}_N.g.vcf.gz",
+    output:
+        temp("vcf_filter/{sample}.recode.vcf"),
+    log:
+        "vcf_filter/{sample}_remove_._filter.log",
+    shell:
+        """vcftools --gzvcf  {input} --keep-filtered "PASS" --keep-filtered "RefCall" \
+        --keep-filtered "LowQual" --recode --recode-INFO-all --out vcf_filter/{wildcards.sample} &> {log}"""
+
+
 rule addRef:
     input:
-        vcf="alignment/snv_indels/deepvariant/{sample}_{type}.g.vcf.gz",
+        vcf="vcf_filter/{sample}.recode.vcf",
         ref=config["reference"]["fasta"],
     output:
-        temp("vcf_filter/{sample}_{type}_ref.vcf"),
+        temp("vcf_filter/{sample}_ref.vcf"),
     log:
-        "vcf_filter/{sample}_{type}_add_ref.log",
+        "vcf_filter/{sample}_add_ref.log",
     params:
         config["programdir"]["dir"],
     conda:
@@ -17,23 +30,23 @@ rule addRef:
 
 rule changeM2MT:
     input:
-        "vcf_filter/{sample}_{type}_ref.vcf",
+        "vcf_filter/{sample}_ref.vcf",
     output:
-        temp("vcf_filter/{sample}_{type}.vcf"),
+        temp("vcf_filter/{sample}.vcf"),
     log:
-        "vcf_filter/{sample}_{type}_chrMT.log",
+        "vcf_filter/{sample}_chrMT.log",
     shell:
         """( awk '{{gsub(/chrM/,"chrMT"); print}}' {input} > {output} ) &> {log}"""
 
 
 rule bgzipNtabix:
     input:
-        "vcf_filter/{sample}_{type}.vcf",
+        "vcf_filter/{sample}.vcf",
     output:
-        "vcf_filter/{sample}_{type}.vcf.gz",
-        "vcf_filter/{sample}_{type}.vcf.gz.tbi",
+        "vcf_filter/{sample}.vcf.gz",
+        "vcf_filter/{sample}.vcf.gz.tbi",
     log:
-        "vcf_filter/{sample}_{type}.bgzip-tabix.log",
+        "vcf_filter/{sample}.bgzip-tabix.log",
     conda:
         "../envs/poirot.yaml"
     shell:
