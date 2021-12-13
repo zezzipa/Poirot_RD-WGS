@@ -39,17 +39,23 @@ include: "rules/vcf_filter.smk"
 include: "rules/peddy.smk"
 
 
-# module qc:
-#     snakefile:
-#         github("hydra-genetics/qc", path="workflow/Snakefile", tag="develop")
-#     config:
-#         config
-#
-#
-# use rule fastqc from qc as module_fastqc
-# use rule picard_duplication_metrics from qc as module_pic_dup_met
-# use rule picard_insert_size from qc as module_pic_ins_size
-# use rule picard_alignment_summary_metrics from qc as module_pic_align_sum_met
-# use rule samtools_stats from qc as module_updated_samtools_stats
-# use rule pickard_hs_metrics from qc as module_pis_hs_met
-# use rule multiqc from qc as module_multiqc
+module qc:
+    snakefile:
+        github("hydra-genetics/qc", path="workflow/Snakefile", tag="develop")
+    config:
+        config
+
+
+use rule fastqc from qc as module_fastqc
+
+use rule picard_duplication_metrics from qc as module_pic_dup_met
+
+use rule picard_insert_size from qc as module_pic_ins_size
+
+use rule picard_alignment_summary_metrics from qc as module_pic_align_sum_met
+
+use rule samtools_stats from qc as module_updated_samtools_stats
+
+use rule pickard_hs_metrics from qc as module_pis_hs_met
+
+use rule multiqc from qc as module_multiqc

@@ -5,11 +5,12 @@ rule gvcf2vcf:
         "alignment/snv_indels/deepvariant/{sample}_N.g.vcf.gz",
     output:
         temp("vcf_filter/{sample}.recode.vcf"),
+        name="vcf_filter/{sample}",
     log:
         "vcf_filter/{sample}_remove_._filter.log",
     shell:
         """vcftools --gzvcf  {input} --keep-filtered "PASS" --keep-filtered "RefCall" \
-        --keep-filtered "LowQual" --recode --recode-INFO-all --out vcf_filter/{wildcards.sample} &> {log}"""
+        --keep-filtered "LowQual" --recode --recode-INFO-all --out vcf_filter/{output.name} &> {log}"""
 
 
 rule addRef:

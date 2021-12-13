@@ -6,13 +6,14 @@ rule deepvariant_germline:
         reads=["prealignment/merged/{sample}_{type}_fastq1.fastq.gz",
         "prealignment/merged/{sample}_{type}_fastq2.fastq.gz"],
     output:
-        bam="alignment/merge_bam/{sample}_{type}.mark_duplicates.bam",
+        bam="alignment/merge_bam/{sample}_{type}.bam",
         vcf="alignment/snv_indels/deepvariant/{sample}_{type}.g.vcf.gz",
     log:
         "alignment/snv_indels/{sample}_{type}.pb.fq2vcf.log",
     params:
         n=2,
         dir="/scratch/wp3/GPU/",
+        name="{sample}_{type}"
     conda:
         "../envs/poirot.yaml",
     shell:
@@ -23,10 +24,10 @@ rule deepvariant_germline:
         --gvcf --out-variants {output.vcf} \
         --num-gpus {params.n} \
         --tmp-dir {params.dir} \
-        --read-group-sm {wildcards.sample} \
+        --read-group-sm {params.name} \
         --read-group-lb illumina \
         --read-group-pl deepvariant_germline \
-        --read-group-id-prefix {wildcards.sample}  &> {log}"
+        --read-group-id-prefix {params.name}  &> {log}"
 
 
 #--read-group-sm
