@@ -53,7 +53,6 @@ genepanels:
 mosdepth:
   container: "docker://hydragenetics/mosdepth:0.3.2"
 
-#Tror inte dessa behövs i min config, det hämtas ju i modulerna
 trimmer_software: "fastp"
 
 fastp_pe:
@@ -62,8 +61,23 @@ fastp_pe:
 fastqc:
   container: "docker://hydragenetics/fastqc:0.11.9"
 
-# tools:
-#   bamutil: "docker://marrip/bamutil:v1.0.14"
-#   python: "docker://python:3.9.1-slim-buster"
-#   r: "docker://marrip/r-base:4.0.3"
-#   ubuntu: "docker://ubuntu:18.04"
+samtools_stats:
+  container: "docker://hydragenetics/common:0.0.1"
+
+picard_alignment_summary_metrics:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+picard_duplication_metrics:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+picard_hs_metrics:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+picard_insert_size:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+svdb_merge:
+  container: "docker://hydragenetics/svdb:2.5.0"
+  cnv_callers:
+    - "manta"
+    - "cnvnator"
