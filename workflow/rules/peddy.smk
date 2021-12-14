@@ -1,26 +1,22 @@
 
-rule deepvariant:
+
+rule gvcf2vcf:
     input:
-        ref=config["reference"]["fasta"],
-        bam="fq2vcf/{sample}.mark_duplicates.bam",
-        bed=config["reference"]["1000Ginterval"],
+        "alignment/snv_indels/deepvariant/{sample}_N.g.vcf.gz",
     output:
-        ogvcf="peddy/{sample}.g.vcf.gz",
+        temp("qc/peddy/{sample}.recode.vcf"),
+        name="qc/peddy/{sample}",
     log:
-        "peddy/{sample}.deepvariant.log.txt",
-    conda:
-        "../envs/parabricks.yaml"
+        "qc/peddy/{sample}_remove_._filter.log",
     shell:
-        "pbrun deepvariant --ref {input.ref} --interval-file {input.bed} \
-        --in-bam {input.bam} --gvcf --out-variants {output.ogvcf} \
-        &> {log}"
+        """vcftools --gzvcf  {input} --bed 1000G.bed --recode --recode-INFO-all --out {output.name} &> {log}"""
 
 
 rule tabix:
     input:
-        "peddy/{sample}.g.vcf.gz",
+        "qc/peddy/{sample}.g.vcf.gz",
     output:
-        "peddy/{sample}.g.vcf.gz.tbi",
+        "qc/peddy/{sample}.g.vcf.gz.tbi",
     log:
         "fq2vcf/{sample}.bgzip-tabix.log",
     conda:

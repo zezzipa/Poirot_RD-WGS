@@ -14,13 +14,13 @@ from hydra_genetics.utils.resources import load_resources
 from hydra_genetics.utils.samples import *
 from hydra_genetics.utils.units import *
 
-min_version("6.8.0")
+min_version("6.10.0")
 
 
 ### Set and validate config file
 
 
-configfile: "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/config/config.yaml"
+configfile: "config/config.yaml"
 validate(config, schema="../schemas/config.schema.yaml")
 
 
@@ -48,11 +48,3 @@ validate(units, schema="../schemas/units.schema.yaml")
 wildcard_constraints:
     sample="|".join(samples.index),
     unit="N|T|R",
-
-
-def compile_output_list(wildcards: snakemake.io.Wildcards):
-    return [
-        "alignment/bwa_mem/%s_%s.bam" % (sample, type)
-        for sample in get_samples(samples)
-        for type in get_unit_types(units, sample)
-    ]

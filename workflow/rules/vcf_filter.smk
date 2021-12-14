@@ -10,7 +10,7 @@ rule gvcf2vcf:
         "vcf_filter/{sample}_remove_._filter.log",
     shell:
         """vcftools --gzvcf  {input} --keep-filtered "PASS" --keep-filtered "RefCall" \
-        --keep-filtered "LowQual" --recode --recode-INFO-all --out vcf_filter/{output.name} &> {log}"""
+        --keep-filtered "LowQual" --recode --recode-INFO-all --out {output.name} &> {log}"""
 
 
 rule addRef:

@@ -17,7 +17,7 @@ report: "report/workflow.rst"
 rule all:
     input:
         ["vcf_filter/%s.vcf.gz" % sample for sample in get_samples(samples)],
-        "peddy/all.vcf.gz",
+        "qc/multiqc/MultiQC.html",
 
 #["mosdepth/%s/%s.regions.bed.gz" % panel,sample for panel in config[genepanels] for sample in get_samples(samples)]
 
@@ -45,6 +45,7 @@ module qc:
     config:
         config
 
+use rule multiqc from qc as module_multiqc
 
 use rule fastqc from qc as module_fastqc
 
@@ -54,8 +55,7 @@ use rule picard_insert_size from qc as module_pic_ins_size
 
 use rule picard_alignment_summary_metrics from qc as module_pic_align_sum_met
 
-use rule samtools_stats from qc as module_updated_samtools_stats
+#use rule samtools_stats from qc as module_samtools_stats
+
 
 use rule pickard_hs_metrics from qc as module_pis_hs_met
-
-use rule multiqc from qc as module_multiqc

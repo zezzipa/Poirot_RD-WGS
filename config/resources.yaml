@@ -6,7 +6,7 @@ fastp_pe:
 
 fastqc:
   threads: 10
-  time: "02:00:00"
+  time: "05:00:00"
 
 default_resources:
   threads: 1

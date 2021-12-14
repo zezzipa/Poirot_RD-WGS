@@ -22,7 +22,7 @@ multiqc:
     - "qc/fastqc/{sample}_{type}_fastq2_fastqc.zip"
     - "qc/picard_duplication_metrics/{sample}_{type}.duplication_metrics.txt"
     - "qc/samtools_stats/{sample}_{type}.samtools-stats.txt"
-
+#  config: "/projects/wp1/nobackup/ngs/utveckling/Twist_DNA_DATA/multiqc_config.yaml"
 
 programdir:
   dir: "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/workflow"
@@ -62,8 +62,23 @@ fastp_pe:
 fastqc:
   container: "docker://hydragenetics/fastqc:0.11.9"
 
-# tools:
-#   bamutil: "docker://marrip/bamutil:v1.0.14"
-#   python: "docker://python:3.9.1-slim-buster"
-#   r: "docker://marrip/r-base:4.0.3"
-#   ubuntu: "docker://ubuntu:18.04"
+samtools_stats:
+  container: "docker://hydragenetics/common:0.0.1"
+
+picard_alignment_summary_metrics:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+picard_duplication_metrics:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+picard_hs_metrics:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+picard_insert_size:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+svdb_merge:
+  container: "docker://hydragenetics/svdb:2.5.0"
+  cnv_callers:
+    - "manta"
+    - "cnvnator"
