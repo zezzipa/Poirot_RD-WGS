@@ -1,9 +1,5 @@
-# vim: syntax=python tabstop=4 expandtab
-# vim: syntax=python tabstop=4 expandtab
-# coding: utf-8
-
 __author__ = "Jessika Nordin"
-__copyright__ = "Copyright 2021, Jessika Nordin"
+__copyright__ = "Copyright 2022, Jessika Nordin"
 __email__ = "jessika.nordin@scilifelab.uu.se"
 __license__ = "GPL-3"
 
@@ -16,16 +12,13 @@ report: "report/workflow.rst"
 
 rule all:
     input:
-        ["vcf_filter/%s.vcf.gz" % sample for sample in get_samples(samples)],
-
-
-#["mosdepth/%s/%s.regions.bed.gz" % panel,sample for panel in config[genepanels] for sample in get_samples(samples)]
-# can change the function in common-smk to use : unpack(compile_output_list),
+        ["vcf_final/%s.vcf.gz" % sample for sample in get_samples(samples)],
+        "qc/multiqc/MultiQC.html",
 
 
 module prealignment:
     snakefile:
-        github("hydra-genetics/prealignment", path="workflow/Snakefile", tag="develop")
+        github("hydra-genetics/prealignment", path="workflow/Snakefile", tag=config["modules"]["prealignment"],)
     config:
         config
 
@@ -33,5 +26,131 @@ module prealignment:
 use rule * from prealignment as module_*
 
 
-include: "rules/fq2vcf.smk"
-include: "rules/vcf_filter.smk"
+module parabricks:
+    snakefile:
+        github("hydra-genetics/parabricks", path="workflow/Snakefile", tag=config["modules"]["parabricks"],)
+    config:
+        config
+
+
+use rule pbrun_fq2bam from parabricks as pbrun_fq2bam with:
+    output:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+        bai="parabricks/pbrun_fq2bam/{sample}_{type}.bam.bai",
+        metrics="parabricks/pbrun_fq2bam/{sample}_{type}.metrics",
+        recal="parabricks/pbrun_fq2bam/{sample}_{type}.txt",
+
+
+use rule pbrun_deepvariant from parabricks as pbrun_deepvariant
+
+
+include: "rules/add_ref_to_vcf.smk"
+
+
+module qc:
+    snakefile:
+        github("hydra-genetics/qc", path="workflow/Snakefile", tag=config["modules"]["qc"],)
+    config:
+        config
+
+use rule multiqc from qc as qc_multiqc with:
+    output:
+        "qc/multiqc/MultiQC.html",
+        directory("qc/multiqc/MultiQC_data"),
+
+use rule fastqc from qc as qc_fastqc with:
+    output:
+        html="qc/fastqc/{sample}_{type}_{read}_fastqc.html",
+        zip="qc/fastqc/{sample}_{type}_{read}_fastqc.zip",
+        tmp="qc/fastqc/{sample}_{type}_{read}/tmp.txt",
+
+use rule picard_collect_duplication_metrics from qc as qc_pic_dup_met with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+    output:
+        metrics="qc/picard_collect_duplication_metrics/{sample}_{type}.duplication_metrics.txt",
+
+use rule picard_collect_insert_size_metrics from qc as qc_pic_ins_size with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+    output:
+        txt="qc/picard_collect_insert_size_metrics/{sample}_{type}.insert_size_metrics.txt",
+        pdf="qc/picard_collect_insert_size_metrics/{sample}_{type}.insert_size_histogram.pdf",
+
+use rule picard_collect_gc_bias_metrics from qc as qc_pic_gc_met with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+        ref=config["reference"]["fasta"],
+    output:
+        chart="qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.pdf",
+        metrics="qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.detail_metrics",
+        summary="qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.summary_metrics",
+
+use rule picard_collect_multiple_metrics from qc as qc_pic_multi_met with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+        ref=config["reference"]["fasta"],
+
+use rule picard_collect_alignment_summary_metrics from qc as qc_pic_align_sum_met with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+        ref=config["reference"]["fasta"],
+    output:
+        metrics="qc/picard_collect_alignment_summary_metrics/{sample}_{type}.alignment_summary_metrics.txt",
+
+use rule picard_collect_hs_metrics from qc as qc_pic_hs_met with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+        bait_intervals=config["reference"]["design_intervals"],
+        target_intervals=config["reference"]["design_intervals"],
+        reference=config["reference"]["fasta"],
+    output:
+        "qc/picard_collect_hs_metrics/{sample}_{type}.HsMetrics.txt",
+
+use rule picard_collect_wgs_metrics from qc as qc_pic_wgs_met with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+        ref=config["reference"]["fasta"],
+        interval=config.get("reference", {}).get("wgs_intervals", ""),
+    output:
+        metrics="qc/picard_collect_wgs_metrics/{sample}_{type}.txt",
+
+use rule samtools_stats from qc as qc_samtools_stats with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+    output:
+        "qc/samtools_stats/{sample}_{type}.samtools-stats.txt"
+
+use rule samtools_idxstats from qc as qc_samtools_idxstats with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+        bai="parabricks/pbrun_fq2bam/{sample}_{type}.bam.bai",
+    output:
+        "qc/samtools_idxstats/{sample}_{type}.samtools-idxstats.txt"
+
+use rule mosdepth from qc as qc_mosdepth with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+        bai="parabricks/pbrun_fq2bam/{sample}_{type}.bam.bai",
+        bed=config["reference"]["design_bed"],
+
+
+module cnv_sv:
+    snakefile:
+        github("hydra-genetics/cnv_sv", path="workflow/Snakefile", tag=config["modules"]["cnv_sv"],)
+    config:
+        config
+
+use rule manta from cnv_sv as cnv_sv_manta with:
+    input:
+        bam_n="parabricks/pbrun_fq2bam/{sample}_N.bam",
+        bai_n="parabricks/pbrun_fq2bam/{sample}_N.bam.bai",
+        ref=config["reference"]["fasta"],
+
+use rule manta_run_workflow_n from cnv_sv as cnv_sv_manta_run
+
+# use rule gatk_cnv_collect_read_counts from cnv_sv as gatk_cnv with:
+#     input:
+#         bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
+#         bai="parabricks/pbrun_fq2bam/{sample}_{type}.bam.bai",
+#         interval=config.get("reference", {}).get("design_intervals_gatk_cnv", ""),

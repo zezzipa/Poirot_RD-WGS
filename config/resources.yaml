@@ -1,5 +1,12 @@
 ---
 
+default_resources:
+  threads: 1
+  time: "12:00:00"
+  mem_mb: 1024
+  mem_per_cpu: 3072
+  partition: "core"
+
 fastp_pe:
   threads: 2
   time: "12:00:00"
@@ -8,9 +15,22 @@ fastqc:
   threads: 10
   time: "02:00:00"
 
-default_resources:
+deepvariant:
   threads: 1
   time: "12:00:00"
   mem_mb: 1024
-  mem_per_cpu: 3072
-  partition: core
+  mem_per_cpu: 1024
+  partition: "gpu"
+  gres: "--gres=gpu:2"
+
+fq2bam:
+  threads: 1
+  time: "12:00:00"
+  mem_mb: 1024
+  mem_per_cpu: 1024
+  partition: "gpu"
+  gres: "--gres=gpu:2"
+
+
+
+#Försöka se hur Martin gjort i sin lina på Marvin.

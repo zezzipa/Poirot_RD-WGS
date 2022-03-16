@@ -1,12 +1,12 @@
 
 rule addRef:
     input:
-        vcf="fq2vcf/{sample}.vcf",
+        vcf="parabricks/pbrun_deepvariant/{sample}.vcf",
         ref=config["reference"]["fasta"],
     output:
-        temp("vcf_filter/{sample}_ref.vcf"),
+        temp("vcf_final/{sample}_ref.vcf"),
     log:
-        "vcf_filter/{sample}_add_ref.log",
+        "vcf_final/{sample}_add_ref.log",
     params:
         config["programdir"]["dir"],
     conda:
@@ -17,23 +17,23 @@ rule addRef:
 
 rule changeM2MT:
     input:
-        "vcf_filter/{sample}_ref.vcf",
+        "vcf_final/{sample}_ref.vcf",
     output:
-        temp("vcf_filter/{sample}.vcf"),
+        temp("vcf_final/{sample}.vcf"),
     log:
-        "vcf_filter/{sample}_chrMT.log",
+        "vcf_final/{sample}_chrMT.log",
     shell:
         """( awk '{{gsub(/chrM/,"chrMT"); print}}' {input} > {output} ) &> {log}"""
 
 
 rule bgzipNtabix:
     input:
-        "vcf_filter/{sample}.vcf",
+        "vcf_final/{sample}.vcf",
     output:
-        "vcf_filter/{sample}.vcf.gz",
-        "vcf_filter/{sample}.vcf.gz.tbi",
+        "vcf_final/{sample}.vcf.gz",
+        "vcf_final/{sample}.vcf.gz.tbi",
     log:
-        "vcf_filter/{sample}.bgzip-tabix.log",
+        "vcf_final/{sample}.bgzip-tabix.log",
     conda:
         "../envs/parabricks.yaml"
     shell:
