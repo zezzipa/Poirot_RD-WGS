@@ -14,6 +14,7 @@ rule all:
     input:
         ["vcf_final/%s.vcf.gz" % sample for sample in get_samples(samples)],
         "qc/multiqc/MultiQC.html",
+        ["cnv_sv/manta_run_workflow_t/%s/results/variants/SV.vcf.gz" % sample for sample in get_samples(samples)],
 
 
 module prealignment:
