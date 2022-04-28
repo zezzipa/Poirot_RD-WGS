@@ -1,4 +1,4 @@
----
+ ---
 
 resources: "resources.yaml"
 samples: "samples.tsv"
@@ -9,7 +9,7 @@ default_container: "docker://hydragenetics/common:0.1.0"
 
 
 programdir:
-  dir: "/projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/Poirot_RD-WGS/workflow"
+  dir: "/projects/wp3/nobackup/WGS/WGS_pilot_CGU202111/UJ-3091/Poirot_RD-WGS-develop/workflow"
 
 
 modules:
@@ -18,7 +18,6 @@ modules:
   prealignment: "v0.1.0"
   qc: "some_qc_add"
   misc: "develop"
-
 
 reference:
   fasta: "/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.fasta"
@@ -41,14 +40,12 @@ fastp_pe:
 fastqc:
   container: "docker://hydragenetics/fastqc:0.11.9"
 
-
 multiqc:
   container: "docker://hydragenetics/multiqc:1.11"
   config: "multiqc.config"
   qc_files:
     - "qc/picard_collect_alignment_summary_metrics/{sample}_{type}.alignment_summary_metrics.txt"
-    - "qc/fastqc/{sample}_{type}_fastq1_fastqc.zip"
-    - "qc/fastqc/{sample}_{type}_fastq2_fastqc.zip"
+    - "qc/picard_alignment_summary_metrics/{sample}_{type}.alignment_summary_metrics.txt"
     - "qc/picard_collect_duplication_metrics/{sample}_{type}.duplication_metrics.txt"
     - "qc/picard_collect_multiple_metrics/{sample}_{type}.alignment_summary_metrics"
     - "qc/picard_collect_multiple_metrics/{sample}_{type}.base_distribution_by_cycle_metrics"
@@ -73,14 +70,11 @@ multiqc:
     - "qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.summary_metrics"
     - "qc/samtools_stats/{sample}_{type}.samtools-stats.txt"
     - "qc/samtools_idxstats/{sample}_{type}.samtools-idxstats.txt"
+#    - "qc/fastqc/{sample}_{type}_fastq1_fastqc.zip"
+#    - "qc/fastqc/{sample}_{type}_fastq2_fastqc.zip"
 #     - "prealignment/fastp_pe/{sample}_{run}_{lane}_{type}.json"
-
-
-mosdepth:
-  container: "docker://hydragenetics/mosdepth:0.3.2"
-  extra: "--fast-mode --no-per-base"
-#  by: "500"
-
+#    - "qc/samtools_stats/{sample}_{type}.samtools-stats.txt"
+#  config: "/projects/wp1/nobackup/ngs/utveckling/Twist_DNA_DATA/multiqc_config.yaml"
 
 picard_collect_alignment_summary_metrics:
   container: "docker://hydragenetics/picard:2.25.0"
@@ -113,10 +107,8 @@ picard_collect_multiple_metrics:
 picard_collect_wgs_metrics:
   container: "docker://hydragenetics/picard:2.25.0"
 
-
 samtools:
   container: "docker://hydragenetics/common:0.1.0"
-
 
 tabix:
   container: "docker://hydragenetics/common:0.1.0"
@@ -142,3 +134,39 @@ genepanels:
   - /projects/wp3/Reference_files/Manifest/Clinical_research_exome/Gene_panels/Rasopatier.bed
   - /projects/wp3/Reference_files/Manifest/Clinical_research_exome/Gene_panels/Sotos.bed
   - /projects/wp3/Reference_files/Manifest/Clinical_research_exome/Gene_panels/Trombocytopenier.bed
+
+
+mosdepth:
+  container: "docker://hydragenetics/mosdepth:0.3.2"
+  extra: "--fast-mode --no-per-base"
+#  by: "500"
+
+#Tror inte dessa behövs i min config, det hämtas ju i modulerna
+trimmer_software: "fastp"
+
+fastp_pe:
+  container: "docker://hydragenetics/fastp:0.20.1"
+
+fastqc:
+  container: "docker://hydragenetics/fastqc:0.11.9"
+
+samtools_stats:
+  container: "docker://hydragenetics/common:0.0.1"
+
+picard_alignment_summary_metrics:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+picard_duplication_metrics:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+picard_hs_metrics:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+picard_insert_size:
+  container: "docker://hydragenetics/picard:2.25.0"
+
+svdb_merge:
+  container: "docker://hydragenetics/svdb:2.5.0"
+  cnv_callers:
+    - "manta"
+    - "cnvnator"
