@@ -35,6 +35,10 @@ module parabricks:
 
 
 use rule pbrun_fq2bam from parabricks as pbrun_fq2bam with:
+    input:
+        fastq=lambda wildcards: get_input_fastq(units, wildcards),
+        fasta=config["reference"]["fasta"],
+        sites=config["reference"]["sites"],
     output:
         bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
         bai="parabricks/pbrun_fq2bam/{sample}_{type}.bam.bai",
@@ -42,7 +46,13 @@ use rule pbrun_fq2bam from parabricks as pbrun_fq2bam with:
         recal="parabricks/pbrun_fq2bam/{sample}_{type}.txt",
 
 
-use rule pbrun_deepvariant from parabricks as pbrun_deepvariant
+use rule pbrun_deepvariant from parabricks as pbrun_deepvariant with:
+    input:
+        bam="parabricks/pbrun_fq2bam/{sample}_N.bam",
+        bai="parabricks/pbrun_fq2bam/{sample}_N.bam.bai",
+        fasta=config["reference"]["fasta"],
+    output:
+        vcf="parabricks/pbrun_deepvariant/{sample}.vcf",
 
 
 include: "rules/add_ref_to_vcf.smk"
