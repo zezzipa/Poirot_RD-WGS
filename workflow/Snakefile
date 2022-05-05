@@ -12,9 +12,9 @@ report: "report/workflow.rst"
 
 rule all:
     input:
-        "prealignment/fastp_pe/36326_UJ-3091_L001_ACGGAACA+ACGGAACA_N_fastq1.fastq.gz",
-        "prealignment/fastp_pe/36326_UJ-3091_L001_ACGGAACA+ACGGAACA_N_fastq2.fastq.gz",
-#        ["vcf_final/%s.vcf.gz" % sample for sample in get_samples(samples)],
+        unpack(compile_output_list),
+        ["vcf_final/%s.vcf.gz" % sample for sample in get_samples(samples)],
+        "vcf_final/all.vcf.gz",
 #        "qc/multiqc/MultiQC.html",
 #        ["cnv_sv/manta_run_workflow_t/%s/results/variants/SV.vcf.gz" % sample for sample in get_samples(samples)],
 
@@ -38,26 +38,21 @@ module parabricks:
 
 use rule pbrun_fq2bam from parabricks as pbrun_fq2bam with:
     input:
-        fastq=lambda wildcards: get_input_fastq(units, wildcards),
+        fastq=lambda wildcards: get_in_fastq(units, wildcards),
         fasta=config["reference"]["fasta"],
         sites=config["reference"]["sites"],
-    output:
-        bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
-        bai="parabricks/pbrun_fq2bam/{sample}_{type}.bam.bai",
-        metrics="parabricks/pbrun_fq2bam/{sample}_{type}.metrics",
-        recal="parabricks/pbrun_fq2bam/{sample}_{type}.txt",
+    params:
+        extra=config.get("pbrun_fq2bam", {}).get("extra", ""),
+        in_fq=get_in_fq,
+        num_gpus=lambda wildcards: get_num_gpus("pbrun_fq2bam", wildcards),
 
 
 use rule pbrun_deepvariant from parabricks as pbrun_deepvariant with:
-    input:
-        bam="parabricks/pbrun_fq2bam/{sample}_N.bam",
-        bai="parabricks/pbrun_fq2bam/{sample}_N.bam.bai",
-        fasta=config["reference"]["fasta"],
-    output:
-        vcf="parabricks/pbrun_deepvariant/{sample}.vcf",
 
 
 include: "rules/add_ref_to_vcf.smk"
+
+include: "rules/peddy.smk"
 
 
 module qc:

@@ -16,7 +16,7 @@ modules:
  cnv_sv: "RD_fix"
  compression: "v1.0.0"
  parabricks: "v0.1.0"
- prealignment: "v0.1.0"
+ prealignment: "v0.2.0"
  qc: "some_qc_add"
  misc: "v0.1.0"
 
@@ -30,7 +30,7 @@ reference:
  wgs_intervals: "/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.wgs.interval_list"
  wgs_bed: "/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.wgs.bed"
 
-trimmer_software: "fastp"
+trimmer_software: "fastp_pe"
 
 
 fastp_pe:
@@ -38,6 +38,10 @@ fastp_pe:
 
 fastqc:
  container: "docker://hydragenetics/fastqc:0.11.9"
+
+peddy:
+  p: "4"
+  build: "--sites hg38"
 
 multiqc:
  container: "docker://hydragenetics/multiqc:1.11"
