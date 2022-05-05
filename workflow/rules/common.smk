@@ -1,4 +1,4 @@
-__author__ = "Jessika Nordin"
+___author__ = "Jessika Nordin"
 __copyright__ = "Copyright 2022, Martin Rippin"
 __email__ = "jessika.nordin@scilifelab.uu.se"
 __license__ = "GPL-3"
@@ -47,8 +47,8 @@ wildcard_constraints:
     unit="N|T|R",
     read="fastq[1|2]",
 
-
 ### Functions
+
 def get_input_fastq(units, wildcards):
     return expand(
         "prealignment/fastp_pe/{{sample}}_{flowcell_lane_barcode}_{{type}}_{read}.fastq.gz",
@@ -57,16 +57,6 @@ def get_input_fastq(units, wildcards):
         ],
         read=["fastq1", "fastq2"],
     )
-
-if config.get("trimmer_software", None) == "fastp_pe":
-    merged_input = lambda wildcards: expand(
-        "prealignment/fastp_pe/{{sample}}_{flowcell_lane_barcode}_{{type}}_{{read}}.fastq.gz",
-        flowcell_lane_barcode=[
-            "{}_{}_{}".format(unit.flowcell, unit.lane, unit.barcode) for unit in get_units(units, wildcards, wildcards.type)
-        ],
-    )
-else:
-    merged_input = lambda wildcards: get_fastq_files(units, wildcards)
 
 
 def get_in_fq(wildcards):
@@ -86,15 +76,6 @@ def get_in_fq(wildcards):
         )
         input_list.append(input_unit)
     return " --in-fq ".join(input_list)
-
-
-def get_num_gpus(rule, wildcards):
-    gres = config.get(rule, {"gres": "--gres=gpu:1"}).get("gres", "--gres=gpu:1")[len("--gres=") :]
-    gres_dict = dict()
-    for item in gres.split(","):
-        items = item.split(":")
-        gres_dict[items[0]] = items[1]
-    return gres_dict["gpu"]
 
 
 def compile_output_list(wildcards: snakemake.io.Wildcards):

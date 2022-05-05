@@ -12,9 +12,11 @@ report: "report/workflow.rst"
 
 rule all:
     input:
-        ["vcf_final/%s.vcf.gz" % sample for sample in get_samples(samples)],
-        "qc/multiqc/MultiQC.html",
-        ["cnv_sv/manta_run_workflow_t/%s/results/variants/SV.vcf.gz" % sample for sample in get_samples(samples)],
+        "prealignment/fastp_pe/36326_UJ-3091_L001_ACGGAACA+ACGGAACA_N_fastq1.fastq.gz",
+        "prealignment/fastp_pe/36326_UJ-3091_L001_ACGGAACA+ACGGAACA_N_fastq2.fastq.gz",
+#        ["vcf_final/%s.vcf.gz" % sample for sample in get_samples(samples)],
+#        "qc/multiqc/MultiQC.html",
+#        ["cnv_sv/manta_run_workflow_t/%s/results/variants/SV.vcf.gz" % sample for sample in get_samples(samples)],
 
 
 module prealignment:
