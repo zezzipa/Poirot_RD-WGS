@@ -17,7 +17,7 @@ modules:
  compression: "v1.0.0"
  parabricks: "v0.1.0"
  prealignment: "v0.2.0"
- qc: "some_qc_add"
+ qc: "develop"
  misc: "v0.1.0"
 
 reference:
@@ -45,10 +45,9 @@ peddy:
 
 multiqc:
  container: "docker://hydragenetics/multiqc:1.11"
- config: "multiqc.config"
+ config: "Poirot_RD-WGS-develop/config/multiqc.config"
  qc_files:
   - "qc/picard_collect_alignment_summary_metrics/{sample}_{type}.alignment_summary_metrics.txt"
-  - "qc/picard_alignment_summary_metrics/{sample}_{type}.alignment_summary_metrics.txt"
   - "qc/picard_collect_duplication_metrics/{sample}_{type}.duplication_metrics.txt"
   - "qc/picard_collect_multiple_metrics/{sample}_{type}.alignment_summary_metrics"
   - "qc/picard_collect_multiple_metrics/{sample}_{type}.base_distribution_by_cycle_metrics"
@@ -72,7 +71,7 @@ multiqc:
   - "qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.detail_metrics"
   - "qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.summary_metrics"
   - "qc/samtools_stats/{sample}_{type}.samtools-stats.txt"
-  - "qc/samtools_idxstats/{sample}_{type}.samtools-idxstats.txt"
+#  - "qc/samtools_idxstats/{sample}_{type}.samtools-idxstats.txt"
 #  - "qc/fastqc/{sample}_{type}_fastq1_fastqc.zip"
 #  - "qc/fastqc/{sample}_{type}_fastq2_fastqc.zip"
 #   - "prealignment/fastp_pe/{sample}_{run}_{lane}_{type}.json"

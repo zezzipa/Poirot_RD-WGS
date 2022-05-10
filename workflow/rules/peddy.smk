@@ -7,7 +7,7 @@ rule vcftools_vcfmerge:
     log:
         "peddy/vcftools_vcfmerge.log",
     shell:
-        "vcf-merge {input} | bgzip -c > {output}"
+        "vcf-merge {input} | bgzip -c > {output} &> {log}"
 
 
 rule vcftools_plink:
@@ -19,7 +19,7 @@ rule vcftools_plink:
     log:
         "peddy/vcftools_plink.log",
     shell:
-        "vcftools --vcf {input} --plink --out {output.pre}"
+        "vcftools --vcf {input} --plink --out {output.pre} &> {log}"
 
 
 rule peddy:
@@ -35,7 +35,7 @@ rule peddy:
     log:
         "peddy/peddy.log",
     shell:
-        "peddy -p {params.p} {params.build} --plot --prefix {output.pre} {input.vcf} {input.ped}"
+        "peddy -p {params.p} {params.build} --plot --prefix {output.pre} {input.vcf} {input.ped} &> {log}"
 
 
 # rule get_1000g_pos:
