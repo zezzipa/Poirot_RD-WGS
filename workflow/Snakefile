@@ -118,8 +118,13 @@ use rule mosdepth_bed from qc as qc_mosdepth_bed with:
     input:
         bam="parabricks/pbrun_fq2bam/{sample}_{type}.bam",
         bai="parabricks/pbrun_fq2bam/{sample}_{type}.bam.bai",
-        bed=config["reference"]["design_bed"],
-
+        bed=config.get("reference", {}).get("design_bed", ""),
+    output:
+        bed=temp("qc/mosdepth_bed/{sample}_{type}.regions.bed.gz"),
+        bed_csi=temp("qc/mosdepth_bed/{sample}_{type}.regions.bed.gz.csi"),
+        glob=temp("qc/mosdepth_bed/{sample}_{type}.mosdepth.global.dist.txt"),
+        region=temp("qc/mosdepth_bed/{sample}_{type}.mosdepth.region.dist.txt"),
+        summary=temp("qc/mosdepth_bed/{sample}_{type}.mosdepth.summary.txt"),
 
 
 # module cnv_sv:
