@@ -5,33 +5,38 @@ samples: "Poirot_RD-WGS-develop/config/samples.tsv"
 units: "Poirot_RD-WGS-develop/config/units.tsv"
 
 
-default_container: "docker://hydragenetics/common:0.1.0"
+default_container: "docker://hydragenetics/common:0.1.1"
 
 
 programdir:
- dir: "/projects/wp3/nobackup/WGS/WGS_pilot_CGU202111/UJ-3091/Poirot_RD-WGS-develop/workflow"
+ dir: "/beegfs-storage//projects/wp3/nobackup/WGS/WGS_pilot_CGU202111/UJ-3091/Poirot_RD-WGS-develop/workflow"
 
 
 modules:
+ compression: "v1.1.0"
  cnv_sv: "RD_fix"
- compression: "v1.0.0"
- parabricks: "v0.1.0"
+ parabricks: "v0.2.0"
  prealignment: "v0.2.0"
  qc: "develop"
  misc: "v0.1.0"
+#change qc to version
 
 reference:
- fasta: "/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.fasta"
- genome_dir: "/data/ref_genomes/GRCh38/reference_grasnatter/"
- sites: "/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.known_indels.vcf.gz"
- 1000Ginterval: "/projects/wp3/nobackup/Workspace/PEDDY/1000G.bed"
- design_intervals: "/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Comprehensive_Exome_Covered_Targets_hg38_interval_list.bed"
- design_bed: "/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Comprehensive_Exome_Covered_Targets_hg38.bed"
- wgs_intervals: "/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.wgs.interval_list"
- wgs_bed: "/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.wgs.bed"
+  design_bed: "/beegfs-storage/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.wgs.bed"
+  exome_bed: "/beegfs-storage/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Comprehensive_Exome_Covered_Targets_hg38.bed"
+  exome_intervals: "/beegfs-storage/projects/wp3/Reference_files/Manifest/Clinical_research_exome/TWIST/Twist_Comprehensive_Exome_Covered_Targets_hg38_interval_list.bed"
+  fasta: "/beegfs-storage/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.fasta"
+  fai: "/beegfs-storage/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.fasta.fai"
+  genome_dir: "/beegfs-storage/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens_star"
+  sites: "/beegfs-storage/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.known_indels.vcf.gz"
+  wgs_intervals: "/beegfs-storage/data/ref_genomes/GRCh38/reference_grasnatter/homo_sapiens.wgs.interval_list"
+
 
 trimmer_software: "fastp_pe"
 
+crumble:
+  container: "docker://hydragenetics/crumble:0.8.3"
+  extra: "-O CRAM"
 
 fastp_pe:
  container: "docker://hydragenetics/fastp:0.20.1"
@@ -43,58 +48,68 @@ peddy:
   p: "4"
   build: "--sites hg38"
 
+mosdepth:
+ container: "docker://hydragenetics/mosdepth:0.3.2"
+ by: "500"
+ extra: "--fast-mode --no-per-base"
+
+mosdepth_bed:
+ container: "docker://hydragenetics/mosdepth:0.3.2"
+ extra: "--fast-mode "
+
 multiqc:
- container: "docker://hydragenetics/multiqc:1.11"
- config: "Poirot_RD-WGS-develop/config/multiqc.config"
- qc_files:
-  - "qc/picard_collect_alignment_summary_metrics/{sample}_{type}.alignment_summary_metrics.txt"
-  - "qc/picard_collect_duplication_metrics/{sample}_{type}.duplication_metrics.txt"
-  - "qc/picard_collect_multiple_metrics/{sample}_{type}.alignment_summary_metrics"
-  - "qc/picard_collect_multiple_metrics/{sample}_{type}.base_distribution_by_cycle_metrics"
-  - "qc/picard_collect_multiple_metrics/{sample}_{type}.base_distribution_by_cycle.pdf"
-  - "qc/picard_collect_multiple_metrics/{sample}_{type}.insert_size_metrics"
-  - "qc/picard_collect_multiple_metrics/{sample}_{type}.insert_size_histogram.pdf"
-  - "qc/picard_collect_multiple_metrics/{sample}_{type}.quality_by_cycle_metrics"
-  - "qc/picard_collect_multiple_metrics/{sample}_{type}.quality_by_cycle.pdf"
-  - "qc/picard_collect_multiple_metrics/{sample}_{type}.quality_distribution_metrics"
-  - "qc/picard_collect_multiple_metrics/{sample}_{type}.quality_distribution.pdf"
-  - "qc/picard_collect_insert_size_metrics/{sample}_{type}.insert_size_metrics.txt"
-  - "qc/picard_collect_insert_size_metrics/{sample}_{type}.insert_size_histogram.pdf"
-  - "qc/mosdepth_bed/{sample}_{type}.regions.bed.gz"
-  - "qc/mosdepth_bed/{sample}_{type}.regions.bed.gz.csi"
-  - "qc/mosdepth_bed/{sample}_{type}.mosdepth.global.dist.txt"
-  - "qc/mosdepth_bed/{sample}_{type}.mosdepth.region.dist.txt"
-  - "qc/mosdepth_bed/{sample}_{type}.mosdepth.summary.txt"
-  - "qc/picard_collect_hs_metrics/{sample}_{type}.HsMetrics.txt"
-  - "qc/picard_collect_wgs_metrics/{sample}_{type}.txt"
-  - "qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.pdf"
-  - "qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.detail_metrics"
-  - "qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.summary_metrics"
-  - "qc/samtools_stats/{sample}_{type}.samtools-stats.txt"
-#  - "qc/samtools_idxstats/{sample}_{type}.samtools-idxstats.txt"
-#  - "qc/fastqc/{sample}_{type}_fastq1_fastqc.zip"
-#  - "qc/fastqc/{sample}_{type}_fastq2_fastqc.zip"
+  container: "docker://hydragenetics/multiqc:1.11"
+  config: "Poirot_RD-WGS-develop/config/multiqc.config"
+  reports:
+    DNA:
+      included_unit_types: ['N']
+      qc_files:
+        - "qc/fastqc/{sample}_{type}_{flowcell}_{lane}_{barcode}_{read}_fastqc.zip"
+        - "qc/picard_collect_alignment_summary_metrics/{sample}_{type}.alignment_summary_metrics.txt"
+        - "qc/picard_collect_duplication_metrics/{sample}_{type}.duplication_metrics.txt"
+        - "qc/picard_collect_gc_bias_metrics/{sample}_{type}.gc_bias.summary_metrics"
+        - "qc/picard_collect_hs_metrics/{sample}_{type}.HsMetrics.txt"
+        - "qc/picard_collect_insert_size_metrics/{sample}_{type}.insert_size_metrics.txt"
+        - "qc/picard_collect_multiple_metrics/{sample}_{type}.{ext}"
+        - "qc/picard_collect_wgs_metrics/{sample}_{type}.txt"
+        - "qc/mosdepth/{sample}_{type}.mosdepth.summary.txt"
+        - "qc/mosdepth_bed/{sample}_{type}.per-base.bed.gz"
+        - "qc/samtools_stats/{sample}_{type}.samtools-stats.txt"
+        - "prealignment/fastp_pe/{sample}_{flowcell}_{lane}_{barcode}_{type}.json"
+
+#   - "qc/samtools_idxstats/{sample}_{type}.samtools-idxstats.txt"
+#   - "qc/fastqc/{sample}_{type}_{flowcell}_{lane}_{barcode}_{read}.zip"
 #   - "prealignment/fastp_pe/{sample}_{run}_{lane}_{type}.json"
-#  - "qc/samtools_stats/{sample}_{type}.samtools-stats.txt"
+   # - "qc/mosdepth/{sample}_{type}.regions.bed.gz"
+   # - "qc/mosdepth/{sample}_{type}.regions.bed.gz.csi"
+   # - "qc/mosdepth/{sample}_{type}.mosdepth.global.dist.txt"
+   # - "qc/mosdepth/{sample}_{type}.mosdepth.region.dist.txt"
+   # - "qc/mosdepth_/{sample}_{type}.mosdepth.summary.txt"
 # config: "/projects/wp1/nobackup/ngs/utveckling/Twist_DNA_DATA/multiqc_config.yaml"
 
 picard_collect_alignment_summary_metrics:
  container: "docker://hydragenetics/picard:2.25.0"
+ threads: 6
 
 picard_collect_duplication_metrics:
  container: "docker://hydragenetics/picard:2.25.0"
+ threads: 3
 
 picard_collect_gc_bias_metrics:
  container: "docker://hydragenetics/picard:2.25.0"
+ threads: 6
 
 picard_collect_hs_metrics:
  container: "docker://hydragenetics/picard:2.25.0"
+ threads: 6
 
 picard_collect_insert_size_metrics:
  container: "docker://hydragenetics/picard:2.25.0"
+ threads: 3
 
 picard_collect_multiple_metrics:
  container: "docker://hydragenetics/picard:2.25.0"
+ threads: 6
  output_ext:
   - "alignment_summary_metrics"
   - "base_distribution_by_cycle_metrics"
@@ -108,15 +123,15 @@ picard_collect_multiple_metrics:
 
 picard_collect_wgs_metrics:
  container: "docker://hydragenetics/picard:2.25.0"
-
-mosdepth_bed:
- container: "docker://hydragenetics/mosdepth:0.3.2"
- extra: "--fast-mode --no-per-base"
-
-#Tror inte dessa behövs i min config, det hämtas ju i modulerna
+ threads: 6
 
 samtools_stats:
  container: "docker://hydragenetics/common:0.0.1"
+ threads: 3
+
+samtools_idxstats:
+ container: "docker://hydragenetics/common:0.0.1"
+ threads: 3
 
 samtools:
  container: "docker://hydragenetics/common:0.1.0"
