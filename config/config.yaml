@@ -110,16 +110,16 @@ picard_collect_insert_size_metrics:
 picard_collect_multiple_metrics:
  container: "docker://hydragenetics/picard:2.25.0"
  threads: 6
- output_ext:
-  - "alignment_summary_metrics"
-  - "base_distribution_by_cycle_metrics"
-  - "base_distribution_by_cycle.pdf"
-  - "insert_size_metrics"
-  - "insert_size_histogram.pdf"
-  - "quality_by_cycle_metrics"
-  - "quality_by_cycle.pdf"
-  - "quality_distribution_metrics"
-  - "quality_distribution.pdf"
+ # output_ext:
+ #  - "alignment_summary_metrics"
+ #  - "base_distribution_by_cycle_metrics"
+ #  - "base_distribution_by_cycle.pdf"
+ #  - "insert_size_metrics"
+ #  - "insert_size_histogram.pdf"
+ #  - "quality_by_cycle_metrics"
+ #  - "quality_by_cycle.pdf"
+ #  - "quality_distribution_metrics"
+ #  - "quality_distribution.pdf"
 
 picard_collect_wgs_metrics:
  container: "docker://hydragenetics/picard:2.25.0"
