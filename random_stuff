@@ -6,11 +6,10 @@ pip install hydra-genetics
 pip install snakemake
 pip install -r requirements.txt
 pip install pysam
-module load singularity
+pip install --upgrade hydra_genetics
 module load slurm-drmaa
 module load bcbio-nextgen
 pip install --upgrade snakemake
-pip install --upgrade hydra_genetics
 pip install drmaa
 #
 #vim /projects/wp3/nobackup/Workspace/WGS_pipeline_GPU_test/venv/lib/python3.8/site-packages/hydra_genetics/utils/units.py
